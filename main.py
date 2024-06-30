@@ -70,15 +70,15 @@ class GuiApp:
         self.__tk_input_get_setting_offset(self.config_frame).config(textvariable=self.offset)
 
         self.run_options_frame = self.__tk_label_frame_lxq2hcjy(self.root)
-        self.option1 = tk.BooleanVar(value=True)
-        self.option2 = tk.BooleanVar(value=False)
-        self.option3 = tk.BooleanVar(value=True)
-        self.option4 = tk.BooleanVar(value=False)
+        self.if_elite_monsters = tk.BooleanVar(value=True)
+        self.if_normal_monster = tk.BooleanVar(value=False)
+        self.if_wreckage = tk.BooleanVar(value=True)
+        self.if_apocalypse = tk.BooleanVar(value=False)
 
-        self.__tk_check_button_if_elite_monsters(self.run_options_frame).config(variable=self.option1)
-        self.__tk_check_button_if_normal_monster(self.run_options_frame).config(variable=self.option2)
-        self.__tk_check_button_if_wreckage(self.run_options_frame).config(variable=self.option3)
-        self.__tk_check_button_if_apocalypse(self.run_options_frame).config(variable=self.option4)
+        self.__tk_check_button_if_elite_monsters(self.run_options_frame).config(variable=self.if_elite_monsters)
+        self.__tk_check_button_if_normal_monster(self.run_options_frame).config(variable=self.if_normal_monster)
+        self.__tk_check_button_if_wreckage(self.run_options_frame).config(variable=self.if_wreckage)
+        self.__tk_check_button_if_apocalypse(self.run_options_frame).config(variable=self.if_apocalypse)
 
     def __tk_button_start_btn(self, parent):
         # noinspection PyArgumentList
@@ -200,12 +200,12 @@ class GuiApp:
         else:
             self.stop_script()
 
-    def _async_raise(self, tid, exctype):
+    def _async_raise(self, tid, extype):
         """raises the exception, performs cleanup if needed"""
         tid = ctypes.c_long(tid)
-        if not inspect.isclass(exctype):
-            exctype = type(exctype)
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+        if not inspect.isclass(extype):
+            extype = type(extype)
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(extype))
         if res == 0:
             raise ValueError("invalid thread id")
         elif res != 1:
@@ -238,8 +238,13 @@ class GuiApp:
                        self.offset.get(),
                        self.confidence.get(),
                        self.monster_confidence.get(),
-                       self.corpse_confidence.get()
+                       self.corpse_confidence.get(),
+                       self.if_elite_monsters.get(),
+                       self.if_normal_monster.get(),
+                       self.if_wreckage.get(),
+                       self.if_apocalypse.get()
                        )
+            time.sleep(6)
             while self.running:
                 main_loop()
                 time.sleep(3)
@@ -248,6 +253,6 @@ class GuiApp:
 
 
 if __name__ == "__main__":
-    root = Window(themename='litera')
+    root = Window(themename='darkly')
     app = GuiApp(root)
     root.mainloop()
