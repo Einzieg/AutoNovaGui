@@ -27,21 +27,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade pip setuptools wheel
+        python -m pip install --upgrade virtualenv
+        python -m virtualenv venv
+        source venv/bin/activate
         pip install pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Verify pyinstaller installation
       run: |
+        source venv/bin/activate
         pip show pyinstaller
-
-    - name: Check Python version and PATH
-      run: |
-        python --version
-        echo $PATH
 
     - name: Build with pyinstaller
       run: |
+        source venv/bin/activate
         python -m pyinstaller main.spec
-      env:
-        PATH: ${{ runner.tool_cache }}/Python/${{ matrix.python-version }}/bin:${{ env.PATH }}
