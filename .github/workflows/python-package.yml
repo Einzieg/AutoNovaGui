@@ -38,3 +38,5 @@ jobs:
     - name: Build with pyinstaller
       run: |
         python -m pyinstaller main.spec
+      env:
+        PATH: ${{ runner.tool_cache }}/Python/${{ matrix.python-version }}/bin:${{ env.PATH }}
