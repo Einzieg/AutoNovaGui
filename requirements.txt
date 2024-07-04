@@ -4,4 +4,3 @@ PyGetWindow~=0.0.9
 PyAutoGUI~=0.9.53
 setuptools~=68.2.2
 ttkbootstrap~=1.10.1
-pyinstaller~=6.8.0

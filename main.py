@@ -58,18 +58,18 @@ class GuiApp:
         self.monster_confidence = tk.DoubleVar(value=0.65)
         self.corpse_confidence = tk.DoubleVar(value=0.65)
 
-        self.__tk_label_setting_windie_name(self.config_frame)
+        self.__tk_label_setting_window_name(self.config_frame)
         self.__tk_label_setting_confidence(self.config_frame)
         self.__tk_label_setting_monster_confidence(self.config_frame)
         self.__tk_label_setting_corpse_confidence(self.config_frame)
         self.__tk_label_setting_offset(self.config_frame)
-        self.__tk_input_get_setting_windie_name(self.config_frame).config(textvariable=self.window_name)
+        self.__tk_input_get_setting_window_name(self.config_frame).config(textvariable=self.window_name)
         self.__tk_input_get_setting_confidence(self.config_frame).config(textvariable=self.confidence)
         self.__tk_input_get_setting_monster_confidence(self.config_frame).config(textvariable=self.monster_confidence)
         self.__tk_input_get_setting_corpse_confidence(self.config_frame).config(textvariable=self.corpse_confidence)
         self.__tk_input_get_setting_offset(self.config_frame).config(textvariable=self.offset)
 
-        self.run_options_frame = self.__tk_label_frame_lxq2hcjy(self.root)
+        self.run_options_frame = self.__tk_label_frame_run_choose(self.root)
         self.if_elite_monsters = tk.BooleanVar(value=True)
         self.if_normal_monster = tk.BooleanVar(value=False)
         self.if_wreckage = tk.BooleanVar(value=True)
@@ -102,7 +102,7 @@ class GuiApp:
         frame.place(x=300, y=3, width=490, height=221)
         return frame
 
-    def __tk_label_setting_windie_name(self, parent):
+    def __tk_label_setting_window_name(self, parent):
         label = Label(parent, text="窗口名称", anchor="center")
         label.place(x=2, y=2, width=80, height=35)
         return label
@@ -127,7 +127,7 @@ class GuiApp:
         label.place(x=2, y=154, width=80, height=35)
         return label
 
-    def __tk_input_get_setting_windie_name(self, parent):
+    def __tk_input_get_setting_window_name(self, parent):
         ipt = Entry(parent)
         ipt.place(x=90, y=2, width=200, height=35)
         return ipt
@@ -152,7 +152,7 @@ class GuiApp:
         ipt.place(x=90, y=154, width=200, height=35)
         return ipt
 
-    def __tk_label_frame_lxq2hcjy(self, parent):
+    def __tk_label_frame_run_choose(self, parent):
         frame = LabelFrame(parent, text="运行选择")
         frame.place(x=300, y=236, width=490, height=150)
         return frame
@@ -200,7 +200,8 @@ class GuiApp:
         else:
             self.stop_script()
 
-    def _async_raise(self, tid, extype):
+    @staticmethod
+    def _async_raise(tid, extype):
         """raises the exception, performs cleanup if needed"""
         tid = ctypes.c_long(tid)
         if not inspect.isclass(extype):
@@ -209,8 +210,6 @@ class GuiApp:
         if res == 0:
             raise ValueError("invalid thread id")
         elif res != 1:
-            # """if it returns a number greater than one, you're in trouble,
-            # and you should call it again with exc=NULL to revert the effect"""
             ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
             raise SystemError("PyThreadState_SetAsyncExc failed")
 
