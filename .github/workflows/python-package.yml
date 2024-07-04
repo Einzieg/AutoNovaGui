@@ -33,4 +33,4 @@ jobs:
 
     - name: Build with pyinstaller
       run: |
-        pyinstaller main.spec
+        python -m pyinstaller main.spec
