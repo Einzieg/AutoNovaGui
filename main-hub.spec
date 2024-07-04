@@ -1,9 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
+import sys
 
 # 获取项目目录的绝对路径
-project_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 static_dir = os.path.join(project_dir, 'static')
 icon_path = os.path.join(static_dir, 'ico', 'auto.ico')
 
