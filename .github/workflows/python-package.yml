@@ -35,6 +35,11 @@ jobs:
       run: |
         pip show pyinstaller
 
+    - name: Check Python version and PATH
+      run: |
+        python --version
+        echo $PATH
+
     - name: Build with pyinstaller
       run: |
         python -m pyinstaller main.spec
