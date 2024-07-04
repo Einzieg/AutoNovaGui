@@ -32,4 +32,4 @@ jobs:
         source venv/bin/activate
         pip install pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        python -m pyinstaller main.spec
+        venv/bin/pyinstaller main.spec
