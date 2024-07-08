@@ -74,11 +74,15 @@ class GuiApp:
         self.if_normal_monster = tk.BooleanVar(value=False)
         self.if_wreckage = tk.BooleanVar(value=True)
         self.if_apocalypse = tk.BooleanVar(value=False)
+        self.if_hidden = tk.BooleanVar(value=False)
+        self.if_order = tk.BooleanVar(value=False)
 
         self.__tk_check_button_if_elite_monsters(self.run_options_frame).config(variable=self.if_elite_monsters)
         self.__tk_check_button_if_normal_monster(self.run_options_frame).config(variable=self.if_normal_monster)
         self.__tk_check_button_if_wreckage(self.run_options_frame).config(variable=self.if_wreckage)
         self.__tk_check_button_if_apocalypse(self.run_options_frame).config(variable=self.if_apocalypse)
+        self.__tk_check_button_if_hidden(self.run_options_frame).config(variable=self.if_hidden)
+        self.__tk_check_button_if_orders(self.run_options_frame).config(variable=self.if_order)
 
     def __tk_button_start_btn(self, parent):
         # noinspection PyArgumentList
@@ -167,14 +171,24 @@ class GuiApp:
         cb.place(x=110, y=2, width=80, height=30)
         return cb
 
-    def __tk_check_button_if_apocalypse(self, parent):
-        cb = Checkbutton(parent, text="天启")
-        cb.place(x=310, y=2, width=80, height=30)
-        return cb
-
     def __tk_check_button_if_wreckage(self, parent):
         cb = Checkbutton(parent, text="残骸")
         cb.place(x=210, y=2, width=80, height=30)
+        return cb
+
+    def __tk_check_button_if_apocalypse(self, parent):
+        cb = Checkbutton(parent, text="深红")
+        cb.place(x=310, y=2, width=80, height=30)
+        return cb
+
+    def __tk_check_button_if_hidden(self, parent):
+        cb = Checkbutton(parent, text="隐秘")
+        cb.place(x=10, y=32, width=80, height=30)
+        return cb
+
+    def __tk_check_button_if_orders(self, parent):
+        cb = Checkbutton(parent, text="订单")
+        cb.place(x=110, y=32, width=80, height=30)
         return cb
 
     def setup_logging(self):
@@ -241,7 +255,9 @@ class GuiApp:
                        self.if_elite_monsters.get(),
                        self.if_normal_monster.get(),
                        self.if_wreckage.get(),
-                       self.if_apocalypse.get()
+                       self.if_apocalypse.get(),
+                       self.if_hidden.get(),
+                       self.if_order.get()
                        )
             time.sleep(6)
             while self.running:

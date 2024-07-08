@@ -12,6 +12,7 @@ a = Analysis(
     excludes=[],
     noarchive=False,
 )
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
@@ -20,7 +21,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AutoNovaGui-Base-2.0',
+    name='AutoNovaGui-2.2',
     icon='C:\\Users\\Einzieg\\PycharmProjects\\AutoNovaGui\\static\\ico\\auto.ico',
     debug=False,
     bootloader_ignore_signals=False,
