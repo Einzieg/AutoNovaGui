@@ -29,7 +29,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AutoNovaGui-2.2',
+    name='AutoNovaGui',
     icon=icon_path,
     debug=False,
     bootloader_ignore_signals=False,
