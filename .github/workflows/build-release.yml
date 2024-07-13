@@ -44,7 +44,7 @@ jobs:
       - name: 编译环境设置
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.11.2"
           architecture: "x64"
           cache: 'pip'
       - name: 下载依赖文件
@@ -55,7 +55,7 @@ jobs:
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
-          name: window
+          name: windows
           path: ./dist/*.exe
 
   jobs_macos:
@@ -75,18 +75,18 @@ jobs:
       - name: 编译环境设置
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.11.2"
           architecture: "x64"
           cache: 'pip'
       - name: 下载依赖文件
         run: pip install -r requirements.txt
       - name: 编译 MacOS.app
         run: |
-          pyinstaller main_macos.spec
+          pyinstaller main-macos.spec
       - name: 创建压缩包
         run: |
           cd ./dist
-          zip -r ./my_app_MacOS.zip ./my_app.app
+          zip -r ./AutoNovaGui.zip ./AutoNovaGui.app
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
