@@ -25,4 +25,3 @@ version-resolver:
 template: |
   # 自动构建
   $CHANGES
-no-changes-template: |
