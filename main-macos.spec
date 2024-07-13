@@ -25,7 +25,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='Speech演讲专用软件',
+    name='AutoNovaGui',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -36,7 +36,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['static/ico/auto.icns'],
+    # icon=['static/ico/auto.icns'],
 )
 coll = COLLECT(
     exe,
@@ -46,11 +46,11 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='WebBrowserSpeech',
+    name='AutoNovaGui',
 )
 app = BUNDLE(
     coll,
-    name='WebBrowserSpeech.app',
-    icon='./static/ico/auto.icns',
+    name='AutoNovaGui.app',
+    # icon='./static/ico/auto.icns',
     bundle_identifier=None,
 )
