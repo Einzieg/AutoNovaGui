@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 block_cipher = None
 
 a = Analysis(
@@ -8,7 +7,7 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=[('static', 'static')],
-    hiddenimports=['cv2', 'pygetwindow', 'pyautogui'],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -25,7 +24,6 @@ exe = EXE(
     a.scripts,
     [],
     name='AutoNovaGui',
-    icon=['./static/ico/auto.icns'],
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -38,6 +36,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+
 coll = COLLECT(
     exe,
     a.binaries,
@@ -48,6 +47,7 @@ coll = COLLECT(
     upx_exclude=[],
     name='AutoNovaGui',
 )
+
 app = BUNDLE(
     coll,
     name='AutoNovaGui.app',
