@@ -1,5 +1,5 @@
-name-template: 'v-2.2.1'
-tag-template: 'v--2.2.1'
+name-template: 'v2.2.1'
+tag-template: 'v2.2.1'
 categories:
   - title: '🚀 新功能'
     labels:
@@ -23,8 +23,6 @@ version-resolver:
       - 'patch'
   default: patch
 template: |
-  # 自动更新程序
-  * 更新了自动构建
+  # 自动构建
   $CHANGES
 no-changes-template: |
-  快下载体验~
