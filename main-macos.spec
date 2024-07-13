@@ -49,9 +49,4 @@ coll = COLLECT(
     upx_exclude=[],
     name='AutoNovaGui',
 )
-app = BUNDLE(
-    coll,
-    name='AutoNovaGui.app',
-    icon='static/ico/auto.icns',
-    bundle_identifier=None,
-)
+
