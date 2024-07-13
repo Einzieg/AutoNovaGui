@@ -1,5 +1,5 @@
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
+name-template: 'v-2.2.1'
+tag-template: 'v--2.2.1'
 categories:
   - title: '🚀 新功能'
     labels:
