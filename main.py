@@ -11,6 +11,7 @@ from ttkbootstrap import *
 from control import initialize
 from control import main_loop
 from control import resource_path
+from control import close_game
 
 
 class TextHandler(logging.Handler):
@@ -261,6 +262,12 @@ class GuiApp:
                        )
             time.sleep(6)
             while self.running:
+                # 检查时间，早上九点后关闭游戏进程
+                # if datetime.now().hour >= 9:
+                #     logging.info("时间到，关闭游戏及脚本进程")
+                #     self.stop_script()
+                #     close_game()
+                #     break
                 main_loop()
                 time.sleep(3)
         except Exception as e:

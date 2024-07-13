@@ -65,8 +65,8 @@ no_click_zones = [
     (490, 0, 680, 140),  # 3D
     (946, 524, 974, 552),  # 中央
     (800, 0, 1920, 100),  # 上方资源栏
-    # (1300, 100, 1920, 270),  # 右上角活动*2
-    (910, 0, 1920, 250),  # 右上角活动*5
+    (1300, 100, 1920, 270),  # 右上角活动*2
+    # (910, 0, 1920, 250),  # 右上角活动*5
     (0, 950, 1920, 1080),  # 下方聊天栏
     (1600, 888, 1920, 1080),  # 星系按钮
     (5, 0, 5, 1080),  # 左侧屏幕边缘
@@ -491,6 +491,12 @@ def reset_process():
     star_system()
     zoom_out()
     time.sleep(3)
+
+
+def close_game():
+    logging.info("正在关闭游戏>>>")
+    os.system("taskkill /f /im SpaceArmada.exe")
+    os.system("D:\Software\MuMuPlayer-12.0\shell\MuMuManager.exe api -v 5 shutdown_player")
 
 
 # 主循环
