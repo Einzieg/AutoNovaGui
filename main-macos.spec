@@ -1,9 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-import os
 a = Analysis(
     ['main.py'],
-    pathex=[os.path.dirname(__file__)],
+    pathex=['.'],
     binaries=[],
     datas=[('static', 'static')],
     hiddenimports=['cv2', 'pygetwindow', 'pyautogui'],
