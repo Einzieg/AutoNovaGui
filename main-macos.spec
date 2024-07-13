@@ -1,12 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+
 block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=['.'],
+    pathex=[],
     binaries=[],
-    datas=[('static', 'static')],
+    datas=[('./static', './static')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -14,29 +15,29 @@ a = Analysis(
     excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
+    cipher=block_cipher,
     noarchive=False,
 )
-
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
     a.scripts,
     [],
-    name='AutoNovaGui',
+    exclude_binaries=True,
+    name='Speech演讲专用软件',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['static/ico/auto.icns'],
 )
-
 coll = COLLECT(
     exe,
     a.binaries,
@@ -45,12 +46,11 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='AutoNovaGui',
+    name='WebBrowserSpeech',
 )
-
 app = BUNDLE(
     coll,
-    name='AutoNovaGui.app',
+    name='WebBrowserSpeech.app',
     icon='./static/ico/auto.icns',
-    bundle_identifier=None
+    bundle_identifier=None,
 )
