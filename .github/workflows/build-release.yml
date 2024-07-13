@@ -51,7 +51,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: 编译exe
         run: |
-#          python run_write_version.py
           pyinstaller main-win.spec
       - name: 上传产物
         uses: actions/upload-artifact@v3
@@ -83,7 +82,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: 编译 MacOS.app
         run: |
-#          python run_write_version.py
           pyinstaller main_macos.spec
       - name: 创建压缩包
         run: |
