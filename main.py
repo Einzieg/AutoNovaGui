@@ -1,17 +1,17 @@
+import configparser
 import ctypes
 import inspect
 import logging
 import os
 import threading
 import time
-from tkinter import scrolledtext
+# from tkinter import scrolledtext
 
 from ttkbootstrap import *
 
 from control import initialize
 from control import main_loop
 from control import resource_path
-from control import close_game
 
 
 class TextHandler(logging.Handler):
@@ -36,10 +36,12 @@ class GuiApp:
         self.root.iconbitmap(resource_path("static/ico/auto.ico"))
         self.root.geometry("800x800")
         self.root.resizable(False, False)
+        self.config_file = 'config.ini'
         self.setup_ui()
         self.running = False
         self.script_thread = None
         self.setup_logging()
+        self.load_config()
 
     def setup_ui(self):
         self.start_image = tk.PhotoImage(file=resource_path("static/ico/start.png"))
@@ -98,13 +100,13 @@ class GuiApp:
         return btn
 
     def __tk_text_window_log(self, parent):
-        text = scrolledtext.ScrolledText(parent, wrap=tk.WORD)
+        text = ScrolledText(parent, wrap=tk.WORD)
         text.place(x=10, y=400, width=780, height=390)
         return text
 
     def __tk_label_frame_lxq1wys2(self, parent):
         frame = LabelFrame(parent, text="启动参数")
-        frame.place(x=300, y=3, width=490, height=221)
+        frame.place(x=300, y=10, width=300, height=380)
         return frame
 
     def __tk_label_setting_window_name(self, parent):
@@ -159,41 +161,41 @@ class GuiApp:
 
     def __tk_label_frame_run_choose(self, parent):
         frame = LabelFrame(parent, text="运行选择")
-        frame.place(x=300, y=236, width=490, height=150)
+        frame.place(x=620, y=10, width=160, height=380)
         return frame
 
     def __tk_check_button_if_elite_monsters(self, parent):
-        cb = Checkbutton(parent, text="精英怪")
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="精英怪")
         cb.place(x=10, y=2, width=80, height=30)
         return cb
 
     def __tk_check_button_if_normal_monster(self, parent):
-        cb = Checkbutton(parent, text="普通怪")
-        cb.place(x=110, y=2, width=80, height=30)
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="普通怪")
+        cb.place(x=10, y=42, width=80, height=30)
         return cb
 
     def __tk_check_button_if_wreckage(self, parent):
-        cb = Checkbutton(parent, text="残骸")
-        cb.place(x=210, y=2, width=80, height=30)
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="残骸")
+        cb.place(x=10, y=82, width=80, height=30)
         return cb
 
     def __tk_check_button_if_apocalypse(self, parent):
-        cb = Checkbutton(parent, text="深红")
-        cb.place(x=310, y=2, width=80, height=30)
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="深红")
+        cb.place(x=10, y=122, width=80, height=30)
         return cb
 
     def __tk_check_button_if_hidden(self, parent):
-        cb = Checkbutton(parent, text="隐秘")
-        cb.place(x=10, y=32, width=80, height=30)
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="隐秘")
+        cb.place(x=10, y=162, width=80, height=30)
         return cb
 
     def __tk_check_button_if_orders(self, parent):
-        cb = Checkbutton(parent, text="订单")
-        cb.place(x=110, y=32, width=80, height=30)
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="订单")
+        cb.place(x=10, y=202, width=80, height=30)
         return cb
 
     def setup_logging(self):
-        log_dir = 'AutoNova-log'
+        log_dir = os.path.join(os.getcwd(), 'logs')
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
 
@@ -231,6 +233,7 @@ class GuiApp:
     def start_script(self):
         if not self.running:
             self.running = True
+            self.save_config()
             self.script_thread = threading.Thread(target=self.run_script)
             self.script_thread.start()
             self.start_button.place_forget()
@@ -244,6 +247,45 @@ class GuiApp:
             self.stop_button.place_forget()
             self.start_button.place(x=50, y=150, width=200, height=100)
             logging.info("执行结束<<<")
+            self.save_config()
+
+    def load_config(self):
+        config = configparser.ConfigParser()
+        if os.path.exists(self.config_file):
+            config.read(self.config_file)
+            self.window_name.set(config.get('Settings', 'window_name', fallback='Space Armada'))
+            self.offset.set(config.getfloat('Settings', 'offset', fallback=3))
+            self.confidence.set(config.getfloat('Settings', 'confidence', fallback=0.75))
+            self.monster_confidence.set(config.getfloat('Settings', 'monster_confidence', fallback=0.65))
+            self.corpse_confidence.set(config.getfloat('Settings', 'corpse_confidence', fallback=0.65))
+            self.if_elite_monsters.set(config.getboolean('Settings', 'if_elite_monsters', fallback=True))
+            self.if_normal_monster.set(config.getboolean('Settings', 'if_normal_monster', fallback=False))
+            self.if_wreckage.set(config.getboolean('Settings', 'if_wreckage', fallback=True))
+            self.if_apocalypse.set(config.getboolean('Settings', 'if_apocalypse', fallback=False))
+            self.if_hidden.set(config.getboolean('Settings', 'if_hidden', fallback=False))
+            self.if_order.set(config.getboolean('Settings', 'if_order', fallback=False))
+
+    def save_config(self):
+        config = configparser.ConfigParser()
+        config['Settings'] = {
+            'window_name': self.window_name.get(),
+            'offset': self.offset.get(),
+            'confidence': self.confidence.get(),
+            'monster_confidence': self.monster_confidence.get(),
+            'corpse_confidence': self.corpse_confidence.get(),
+            'if_elite_monsters': self.if_elite_monsters.get(),
+            'if_normal_monster': self.if_normal_monster.get(),
+            'if_wreckage': self.if_wreckage.get(),
+            'if_apocalypse': self.if_apocalypse.get(),
+            'if_hidden': self.if_hidden.get(),
+            'if_order': self.if_order.get()
+        }
+        with open(self.config_file, 'w') as configfile:
+            config.write(configfile)
+
+    def on_closing(self):
+        self.save_config()
+        self.root.destroy()  # 确保关闭窗口
 
     # 主函数
     def run_script(self):
@@ -262,12 +304,6 @@ class GuiApp:
                        )
             time.sleep(6)
             while self.running:
-                # 检查时间，早上九点后关闭游戏进程
-                # if datetime.now().hour >= 9:
-                #     logging.info("时间到，关闭游戏及脚本进程")
-                #     self.stop_script()
-                #     close_game()
-                #     break
                 main_loop()
                 time.sleep(3)
         except Exception as e:
@@ -275,6 +311,8 @@ class GuiApp:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     root = Window(themename='darkly')
     app = GuiApp(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口
     root.mainloop()

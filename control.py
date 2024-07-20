@@ -58,6 +58,18 @@ home_icon = cv2.imread(resource_path('static/novaimgs/game_button/button_home.pn
 return_icon = cv2.imread(resource_path('static/novaimgs/game_button/button_return.png'), cv2.IMREAD_GRAYSCALE)
 # 加载坐标管理图标
 coordinate_icon = cv2.imread(resource_path('static/novaimgs/game_button/button_coordinate.png'), cv2.IMREAD_GRAYSCALE)
+# 加载雷达图标
+radar_icon = cv2.imread(resource_path('static/novaimgs/game_button/button_radar.png'), cv2.IMREAD_GRAYSCALE)
+# 加载搜索图标
+search_icon = cv2.imread(resource_path('static/novaimgs/game_button/button_search.png'), cv2.IMREAD_GRAYSCALE)
+# 加载维修图标
+repair_icon = cv2.imread(resource_path('static/novaimgs/game_button/button_repair.png'), cv2.IMREAD_GRAYSCALE)
+# 加载使用图标
+button_use_props = cv2.imread(resource_path('static/novaimgs/game_button/button_use_props.png'), cv2.IMREAD_GRAYSCALE)
+# 加载max图标
+button_max = cv2.imread(resource_path('static/novaimgs/game_button/button_max.png'), cv2.IMREAD_GRAYSCALE)
+# 加载使用能量图标
+button_use_energy = cv2.imread(resource_path('static/novaimgs/game_button/energy.png'), cv2.IMREAD_GRAYSCALE)
 
 # 禁止点击区
 no_click_zones = [
@@ -176,6 +188,12 @@ def get_coordinate(img, believe, forbidden_zones=None):
     return None
 
 
+def click(x, y, sleep):
+    pyautogui.mouseDown(x, y)
+    time.sleep(sleep)
+    pyautogui.mouseUp(x, y)
+
+
 # ------------------------------------------------------------------------
 # 依次匹配精英怪物模板
 def find_monster_coordinates(believe):
@@ -191,15 +209,8 @@ def find_monster_coordinates(believe):
 def find_monsters():
     logging.info("正在寻找精英怪>>>")
     coordinates = find_monster_coordinates(monster_confidence)
-    # if coordinates:
     x, y = coordinates
-    # for zone in no_click_zones:
-    #     if zone[0] <= x <= zone[2] and zone[1] <= y <= zone[3]:
-    #         logging.info(f"坐标 [{x}, {y}] 在禁止点击区")
-    #         return None
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
 
@@ -228,15 +239,8 @@ def find_red_monster_coordinates(believe):
 def find_normal_monsters():
     logging.info("正在寻找普通怪>>>")
     coordinates = find_normal_monster_coordinates(monster_confidence)
-    # if coordinates:
     x, y = coordinates
-    #     for zone in no_click_zones:
-    #         if zone[0] <= x <= zone[2] and zone[1] <= y <= zone[3]:
-    #             logging.info(f"坐标 [{x}, {y}] 在禁止点击区")
-    #             return None
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
 
@@ -244,15 +248,8 @@ def find_normal_monsters():
 def find_red_monsters():
     logging.info("正在寻找深红怪>>>")
     coordinates = find_red_monster_coordinates(monster_confidence)
-    # if coordinates:
     x, y = coordinates
-    # for zone in no_click_zones:
-    #     if zone[0] <= x <= zone[2] and zone[1] <= y <= zone[3]:
-    #         logging.info(f"坐标 [{x}, {y}] 在禁止点击区")
-    #         return None
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
 
@@ -262,9 +259,7 @@ def find_red_monsters():
 def attack_monsters():
     logging.info("正在匹配攻击图标>>>")
     x, y = get_coordinate(attack_icon, confidence)
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
 
@@ -272,9 +267,7 @@ def attack_monsters():
 def select_all():
     logging.info("正在匹配选择全部图标>>>")
     x, y = get_coordinate(select_all_icon, confidence)
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
 
@@ -282,9 +275,7 @@ def select_all():
 def confirm():
     logging.info("正在匹配确定图标>>>")
     x, y = get_coordinate(confirm_icon, confidence)
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
     # global ATTACKS_NO
@@ -349,28 +340,16 @@ def find_debris_coordinates(believe):
 def find_debris():
     logging.info("正在寻找残骸>>>")
     coordinates = find_debris_coordinates(corpse_confidence)
-    # if coordinates:
     x, y = coordinates
-    # for zone in no_click_zones:
-    #     if zone[0] <= x <= zone[2] and zone[1] <= y <= zone[3]:
-    #         logging.info(f"坐标 [{x}, {y}] 在禁止点击区")
-    #         return None
-    pyautogui.mouseDown(x, y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(x, y)
+    click(x, y, 0.2)
     time.sleep(3)
 
 
 def collect():
     logging.info("正在匹配采集图标>>>")
-    screen_x, screen_y = get_coordinate(collect_icon, confidence)
-    pyautogui.mouseDown(screen_x, screen_y)
-    time.sleep(0.3)
-    pyautogui.mouseUp(screen_x, screen_y)
+    x, y = get_coordinate(collect_icon, confidence)
+    click(x, y, 0.2)
     time.sleep(3)
-
-    # global WRECKAGE_NO
-    # WRECKAGE_NO += 1
 
 
 def debris_process():
@@ -388,12 +367,88 @@ def debris_process():
 # ------------------------------------------------------------------------
 
 
+# 点击雷达
+def find_radar():
+    logging.info("正在匹配雷达图标>>>")
+    x, y = get_coordinate(radar_icon, confidence)
+    click(x, y, 0.2)
+    time.sleep(3)
+
+
+# 点击搜索
+def find_search():
+    logging.info("正在匹配搜索图标>>>")
+    x, y = get_coordinate(search_icon, confidence)
+    click(x, y, 0.2)
+    time.sleep(3)
+
+
+# 点击维修
+def find_repair():
+    logging.info("正在匹配维修图标>>>")
+    try:
+        x, y = get_coordinate(repair_icon, confidence)
+        click(x, y, 0.2)
+        time.sleep(3)
+    except TypeError:
+        logging.info("未匹配维修图标<<<")
+
+
+# 点击使用
+def find_use():
+    logging.info("正在匹配使用图标>>>")
+    try:
+        x, y = get_coordinate(button_use_props, confidence)
+        click(x, y, 0.2)
+        time.sleep(3)
+        return True
+    except TypeError:
+        return False
+
+
+# 点击max
+def find_max():
+    logging.info("正在匹配max图标>>>")
+    x, y = get_coordinate(button_max, confidence)
+    click(x, y, 0.2)
+    time.sleep(3)
+
+
+# 点击使用道具
+def find_use_props():
+    logging.info("正在匹配使用道具图标>>>")
+    x, y = get_coordinate(button_use_energy, confidence)
+    click(x, y, 0.2)
+    time.sleep(3)
+
+
+# 刷隐秘流程
+def hide_process():
+    logging.info("开始刷隐秘流程>>>")
+    try:
+        find_radar()
+        find_search()
+        if find_use():
+            # find_use()
+            find_max()
+            find_use_props()
+            find_search()
+        attack_monsters()
+        find_repair()
+        select_all()
+        confirm()
+    except TypeError:
+        logging.info("未匹配<<<")
+
+
+# ------------------------------------------------------------------------
+
 # 空间站
 def space_station():
     logging.info("正在匹配空间站图标>>>")
     try:
-        screen_x, screen_y = get_coordinate(space_station_icon, confidence)
-        pyautogui.click(screen_x, screen_y)
+        x, y = get_coordinate(space_station_icon, confidence)
+        pyautogui.click(x, y)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配空间站图标<<<")
@@ -403,8 +458,8 @@ def space_station():
 def star_system():
     logging.info("正在匹配星系图标>>>")
     try:
-        screen_x, screen_y = get_coordinate(star_system_icon, confidence)
-        pyautogui.click(screen_x, screen_y)
+        x, y = get_coordinate(star_system_icon, confidence)
+        pyautogui.click(x, y)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配星系图标<<<")
@@ -432,8 +487,8 @@ def find_close():
 def home():
     logging.info("正在匹配主页图标>>>")
     try:
-        screen_x, screen_y = get_coordinate(home_icon, confidence)
-        pyautogui.click(screen_x, screen_y)
+        x, y = get_coordinate(home_icon, confidence)
+        pyautogui.click(x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配主页图标<<<")
@@ -444,8 +499,8 @@ def examine_return():
     logging.info("正在匹配返回图标>>>")
     try:
         if get_coordinate(return_icon, confidence):
-            screen_x, screen_y = get_coordinate(coordinate_icon, confidence)
-            pyautogui.click(screen_x, screen_y)
+            x, y = get_coordinate(coordinate_icon, confidence)
+            pyautogui.click(x, y)
             time.sleep(3)
             find_close()
             time.sleep(3)
@@ -504,6 +559,8 @@ def main_loop():
     time.sleep(3)
     if if_reset:
         reset_process()
+    if if_hidden:
+        hide_process()
     if if_apocalypse:
         attack_apocalypse_process()
     if if_elite_monster:

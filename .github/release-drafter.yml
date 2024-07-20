@@ -1,5 +1,5 @@
-name-template: 'v2.3'
-tag-template: 'v2.3'
+name-template: 'v2.3.0'
+tag-template: 'v2.3.0'
 categories:
   - title: '🚀 新功能'
     labels:
