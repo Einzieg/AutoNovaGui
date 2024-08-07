@@ -9,6 +9,8 @@ import numpy as np
 import pyautogui
 import pygetwindow as gw
 
+from adbutils import click, get_screenshot
+
 
 def resource_path(relative_path):
     """获取资源文件的绝对路径"""
@@ -161,8 +163,10 @@ def initialize(game_window_name, game_offset, game_confidence, game_monster_conf
 
 # 根据图片返回屏幕坐标
 def get_coordinate(img, believe, forbidden_zones=None):
-    screenshot = pyautogui.screenshot(region=(window_left, window_top, window_width, window_height))
-    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
+    # screenshot = pyautogui.screenshot(region=(window_left, window_top, window_width, window_height))
+    # screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
+    get_screenshot()
+    screenshot = cv2.imread(resource_path('screenshot.png'), cv2.IMREAD_GRAYSCALE)
 
     if forbidden_zones is not None:
         for zone in no_click_zones:
@@ -188,10 +192,10 @@ def get_coordinate(img, believe, forbidden_zones=None):
     return None
 
 
-def click(x, y, sleep):
-    pyautogui.mouseDown(x, y)
-    time.sleep(sleep)
-    pyautogui.mouseUp(x, y)
+# def click(x, y, sleep):
+#     pyautogui.mouseDown(x, y)
+#     time.sleep(sleep)
+#     pyautogui.mouseUp(x, y)
 
 
 # ------------------------------------------------------------------------

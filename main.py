@@ -5,7 +5,6 @@ import logging
 import os
 import threading
 import time
-# from tkinter import scrolledtext
 
 from ttkbootstrap import *
 
