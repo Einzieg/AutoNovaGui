@@ -43,7 +43,6 @@ def send_scripts():
 # 
 send_scripts()
 # get_screenshot(device)
-move_screen()
 zoom_in()
 zoom_out()
 # click(1510, 955, 1)
