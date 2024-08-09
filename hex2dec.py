@@ -3,6 +3,7 @@
 
 import sys
 
+
 def hex_to_dec(filename):
     # Command prefix
     prefix = "sendevent"
@@ -14,7 +15,7 @@ def hex_to_dec(filename):
     with open(filename, "r") as fo, open(outfile, "w") as fw:
         # Write the script header
         fw.write("#!/bin/sh\n")
-        #fw.write("echo Running – drawing function\n")
+        # fw.write("echo Running – drawing function\n")
 
         # Process each line in the input file
         for inputline in fo:
@@ -49,6 +50,7 @@ def hex_to_dec(filename):
     print(f"File created: {outfile}")
     print(f"Copy file to the device with: adb push {outfile} /sdcard/{outfile}")
     print(f"Run the script with: adb shell sh /sdcard/{outfile}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

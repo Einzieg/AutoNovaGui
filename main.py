@@ -54,18 +54,18 @@ class GuiApp:
         self.config_frame = self.__tk_label_frame_lxq1wys2(self.root)
 
         # 配置
-        self.window_name = tk.StringVar(value='Space Armada')
+        self.virtual_num = tk.IntVar(value=0)
         self.offset = tk.DoubleVar(value=3)
         self.confidence = tk.DoubleVar(value=0.75)
         self.monster_confidence = tk.DoubleVar(value=0.65)
         self.corpse_confidence = tk.DoubleVar(value=0.65)
 
-        self.__tk_label_setting_window_name(self.config_frame)
+        self.__tk_label_setting_virtual_num(self.config_frame)
         self.__tk_label_setting_confidence(self.config_frame)
         self.__tk_label_setting_monster_confidence(self.config_frame)
         self.__tk_label_setting_corpse_confidence(self.config_frame)
         self.__tk_label_setting_offset(self.config_frame)
-        self.__tk_input_get_setting_window_name(self.config_frame).config(textvariable=self.window_name)
+        self.__tk_input_get_setting_virtual_num(self.config_frame).config(textvariable=self.virtual_num)
         self.__tk_input_get_setting_confidence(self.config_frame).config(textvariable=self.confidence)
         self.__tk_input_get_setting_monster_confidence(self.config_frame).config(textvariable=self.monster_confidence)
         self.__tk_input_get_setting_corpse_confidence(self.config_frame).config(textvariable=self.corpse_confidence)
@@ -108,8 +108,8 @@ class GuiApp:
         frame.place(x=300, y=10, width=300, height=380)
         return frame
 
-    def __tk_label_setting_window_name(self, parent):
-        label = Label(parent, text="窗口名称", anchor="center")
+    def __tk_label_setting_virtual_num(self, parent):
+        label = Label(parent, text="模拟器编号", anchor="center")
         label.place(x=2, y=2, width=80, height=35)
         return label
 
@@ -133,7 +133,7 @@ class GuiApp:
         label.place(x=2, y=154, width=80, height=35)
         return label
 
-    def __tk_input_get_setting_window_name(self, parent):
+    def __tk_input_get_setting_virtual_num(self, parent):
         ipt = Entry(parent)
         ipt.place(x=90, y=2, width=200, height=35)
         return ipt
@@ -252,7 +252,7 @@ class GuiApp:
         config = configparser.ConfigParser()
         if os.path.exists(self.config_file):
             config.read(self.config_file)
-            self.window_name.set(config.get('Settings', 'window_name', fallback='Space Armada'))
+            self.virtual_num.set(config.get('Settings', 'virtual_num', fallback=0))
             self.offset.set(config.getfloat('Settings', 'offset', fallback=3))
             self.confidence.set(config.getfloat('Settings', 'confidence', fallback=0.75))
             self.monster_confidence.set(config.getfloat('Settings', 'monster_confidence', fallback=0.65))
@@ -267,7 +267,7 @@ class GuiApp:
     def save_config(self):
         config = configparser.ConfigParser()
         config['Settings'] = {
-            'window_name': self.window_name.get(),
+            'virtual_num': self.virtual_num.get(),
             'offset': self.offset.get(),
             'confidence': self.confidence.get(),
             'monster_confidence': self.monster_confidence.get(),
@@ -289,7 +289,7 @@ class GuiApp:
     # 主函数
     def run_script(self):
         try:
-            initialize(self.window_name.get(),
+            initialize(self.virtual_num.get(),
                        self.offset.get(),
                        self.confidence.get(),
                        self.monster_confidence.get(),
@@ -305,12 +305,15 @@ class GuiApp:
             while self.running:
                 main_loop()
                 time.sleep(3)
+        except ConnectionRefusedError as e:
+            logging.error(f"连接模拟器失败: {e}")
+            self.stop_script()
         except Exception as e:
             logging.error(f"主函数异常: {e}")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     root = Window(themename='darkly')
     app = GuiApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口

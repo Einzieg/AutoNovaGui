@@ -17,7 +17,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-icon = cv2.imread(resource_path('../AutoNovaGui/static/novaimgs/game_button/button_search.png'), cv2.IMREAD_GRAYSCALE)
+icon = cv2.imread(resource_path('../AutoNovaGui/static/novaimgs/game_button/button_close2.png'), cv2.IMREAD_GRAYSCALE)
 
 # logging.info("正在初始化...")
 # window = gw.getWindowsWithTitle('Space Armada')

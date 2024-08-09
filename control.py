@@ -5,11 +5,16 @@ import sys
 import time
 
 import cv2
-import numpy as np
-import pyautogui
-import pygetwindow as gw
+from matplotlib import pyplot as plt
 
-from adbutils import click, get_screenshot
+import adbutils
+
+
+# import pyautogui
+# import pygetwindow as gw
+
+
+# from adbutils import click, get_screenshot
 
 
 def resource_path(relative_path):
@@ -87,8 +92,8 @@ no_click_zones = [
     (1680, 250, 1920, 750)  # 右侧活动及快捷菜单
 ]
 
-window_left, window_top, window_width, window_height = None, None, None, None
-window_name = None
+# window_left, window_top, window_width, window_height = None, None, None, None
+# virtual_num = None
 offset = None
 confidence = None
 monster_confidence = None
@@ -100,33 +105,41 @@ if_apocalypse = False
 if_wreckage = False
 if_hidden = False
 if_orders = False
+device = None
 
 
-def initialize(game_window_name, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence,
+def initialize(game_virtual_num, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence,
                game_if_elite_monster, game_if_normal_monster, game_if_wreckage, game_if_apocalypse,
                game_if_hidden, game_if_orders):
     logging.info("正在初始化...")
-    window = gw.getWindowsWithTitle(game_window_name)
-    if window:
-        window = window[0]
-        window.maximize()  # 最大化窗口
-        window.activate()  # 将窗口置顶
-        if game_window_name == 'Space Armada':
-            pyautogui.hotkey('alt', 'enter')
-            print("")
-        else:
-            pyautogui.hotkey('F11')
-    else:
-        logging.error('未找到窗口，请检查是否已打开游戏窗口。')
-        return False
+    global device
+    # try:
+    device = adbutils.adb_connect(game_virtual_num)
+    adbutils.send_scripts(device)
+    # except Exception as e:
+    #     logging.error(e)
+    # window = gw.getWindowsWithTitle(game_window_name)
+    # if window:
+    #     window = window[0]
+    #     window.maximize()  # 最大化窗口
+    #     window.activate()  # 将窗口置顶
+    #     if game_window_name == 'Space Armada':
+    #         pyautogui.hotkey('alt', 'enter')
+    #         print("")
+    #     else:
+    #         pyautogui.hotkey('F11')
+    # else:
+    #     logging.error('未找到窗口，请检查是否已打开游戏窗口。')
+    #     return False
 
     global if_reset
-    global window_left, window_top, window_width, window_height
-    global window_name, offset, confidence, monster_confidence, corpse_confidence
+    # global window_left, window_top, window_width, window_height
+    global offset, confidence, monster_confidence, corpse_confidence
     global if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage
     global if_hidden, if_orders
-    window_left, window_top, window_width, window_height = window.left, window.top, window.width, window.height
-    window_name = game_window_name
+    # window_left, window_top, window_width, window_height = window.left, window.top, window.width, window.height
+
+    # virtual_num = game_window_name
     offset = game_offset
     confidence = game_confidence
     monster_confidence = game_monster_confidence
@@ -138,8 +151,8 @@ def initialize(game_window_name, game_offset, game_confidence, game_monster_conf
     if_hidden = game_if_hidden
     if_orders = game_if_orders
 
-    logging.info(f"窗口名称：{window_name}")
-    logging.info(f"窗口位置：{window_left}, {window_top}, {window_width}, {window_height}")
+    # logging.info(f"窗口名称：{window_name}")
+    # logging.info(f"窗口位置：{window_left}, {window_top}, {window_width}, {window_height}")
     logging.info(f"偏移量：{offset}")
     logging.info(f"通用识别置信度：{confidence}")
     logging.info(f"怪物识别置信度：{monster_confidence}")
@@ -163,9 +176,7 @@ def initialize(game_window_name, game_offset, game_confidence, game_monster_conf
 
 # 根据图片返回屏幕坐标
 def get_coordinate(img, believe, forbidden_zones=None):
-    # screenshot = pyautogui.screenshot(region=(window_left, window_top, window_width, window_height))
-    # screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
-    get_screenshot()
+    # adbutils.get_screenshot(device)
     screenshot = cv2.imread(resource_path('screenshot.png'), cv2.IMREAD_GRAYSCALE)
 
     if forbidden_zones is not None:
@@ -180,13 +191,20 @@ def get_coordinate(img, believe, forbidden_zones=None):
     logging.info(f"匹配置信度：{max_val}")
     if max_val >= believe:
         icon_w, icon_h = img.shape[::-1]
+        # ===============
+        # top_left = max_loc
+        # bottom_right = (top_left[0] + icon_w, top_left[1] + icon_h)
+        # cv2.rectangle(screenshot, top_left, bottom_right, (139, 0, 0), 15)
+        # plt.imshow(screenshot, cmap='gray')
+        # plt.show()
+        # ===============
         icon_center_x = max_loc[0] + icon_w // 2
         icon_center_y = max_loc[1] + icon_h // 2
         # 加入随机偏移
         random_offset_x = random.randint(-offset, offset)
         random_offset_y = random.randint(-offset, offset)
-        screen_x = window_left + icon_center_x + random_offset_x
-        screen_y = window_top + icon_center_y + random_offset_y
+        screen_x = icon_center_x + random_offset_x
+        screen_y = icon_center_y + random_offset_y
         logging.info(f"匹配成功，坐标 [{screen_x}, {screen_y}]")
         return screen_x, screen_y
     return None
@@ -201,6 +219,7 @@ def get_coordinate(img, believe, forbidden_zones=None):
 # ------------------------------------------------------------------------
 # 依次匹配精英怪物模板
 def find_monster_coordinates(believe):
+    adbutils.get_screenshot(device)
     for template in monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -214,13 +233,14 @@ def find_monsters():
     logging.info("正在寻找精英怪>>>")
     coordinates = find_monster_coordinates(monster_confidence)
     x, y = coordinates
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
 # ------------------------------------------------------------------------
 # 依次匹配普通怪模板
 def find_normal_monster_coordinates(believe):
+    adbutils.get_screenshot(device)
     for template in normal_monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -231,6 +251,7 @@ def find_normal_monster_coordinates(believe):
 
 # 依次匹配深红怪模板
 def find_red_monster_coordinates(believe):
+    adbutils.get_screenshot(device)
     for template in red_monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -244,7 +265,7 @@ def find_normal_monsters():
     logging.info("正在寻找普通怪>>>")
     coordinates = find_normal_monster_coordinates(monster_confidence)
     x, y = coordinates
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
@@ -253,7 +274,7 @@ def find_red_monsters():
     logging.info("正在寻找深红怪>>>")
     coordinates = find_red_monster_coordinates(monster_confidence)
     x, y = coordinates
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
@@ -262,24 +283,27 @@ def find_red_monsters():
 # 点击攻击
 def attack_monsters():
     logging.info("正在匹配攻击图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(attack_icon, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
 # 选择全部
 def select_all():
     logging.info("正在匹配选择全部图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(select_all_icon, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
 # 确定
 def confirm():
     logging.info("正在匹配确定图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(confirm_icon, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
     # global ATTACKS_NO
@@ -333,6 +357,7 @@ def attack_apocalypse_process():
 # ------------------------------------------------------------------------
 # 依次匹配残骸图标
 def find_debris_coordinates(believe):
+    adbutils.get_screenshot(device)
     for template in debris_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -345,14 +370,15 @@ def find_debris():
     logging.info("正在寻找残骸>>>")
     coordinates = find_debris_coordinates(corpse_confidence)
     x, y = coordinates
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
 def collect():
     logging.info("正在匹配采集图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(collect_icon, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
@@ -374,16 +400,18 @@ def debris_process():
 # 点击雷达
 def find_radar():
     logging.info("正在匹配雷达图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(radar_icon, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
 # 点击搜索
 def find_search():
     logging.info("正在匹配搜索图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(search_icon, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
@@ -391,8 +419,9 @@ def find_search():
 def find_repair():
     logging.info("正在匹配维修图标>>>")
     try:
+        adbutils.get_screenshot(device)
         x, y = get_coordinate(repair_icon, confidence)
-        click(x, y, 0.2)
+        adbutils.click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配维修图标<<<")
@@ -402,8 +431,9 @@ def find_repair():
 def find_use():
     logging.info("正在匹配使用图标>>>")
     try:
+        adbutils.get_screenshot(device)
         x, y = get_coordinate(button_use_props, confidence)
-        click(x, y, 0.2)
+        adbutils.click(device, x, y)
         time.sleep(3)
         return True
     except TypeError:
@@ -413,16 +443,18 @@ def find_use():
 # 点击max
 def find_max():
     logging.info("正在匹配max图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(button_max, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
 # 点击使用道具
 def find_use_props():
     logging.info("正在匹配使用道具图标>>>")
+    adbutils.get_screenshot(device)
     x, y = get_coordinate(button_use_energy, confidence)
-    click(x, y, 0.2)
+    adbutils.click(device, x, y)
     time.sleep(3)
 
 
@@ -451,8 +483,9 @@ def hide_process():
 def space_station():
     logging.info("正在匹配空间站图标>>>")
     try:
+        adbutils.get_screenshot(device)
         x, y = get_coordinate(space_station_icon, confidence)
-        pyautogui.click(x, y)
+        adbutils.click(device, x, y)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配空间站图标<<<")
@@ -462,14 +495,16 @@ def space_station():
 def star_system():
     logging.info("正在匹配星系图标>>>")
     try:
+        adbutils.get_screenshot(device)
         x, y = get_coordinate(star_system_icon, confidence)
-        pyautogui.click(x, y)
+        adbutils.click(device, x, y)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配星系图标<<<")
 
 
 def find_close_icons(believe):
+    adbutils.get_screenshot(device)
     for template in close_icon:
         coords = get_coordinate(template, believe)
         if coords is not None:
@@ -483,16 +518,15 @@ def find_close():
     coordinates = find_close_icons(confidence)
     if coordinates:
         x, y = coordinates
-        pyautogui.mouseDown(x, y)
-        time.sleep(0.3)
-        pyautogui.mouseUp(x, y)
+        adbutils.click(device, x, y)
 
 
 def home():
     logging.info("正在匹配主页图标>>>")
     try:
+        adbutils.get_screenshot(device)
         x, y = get_coordinate(home_icon, confidence)
-        pyautogui.click(x, y)
+        adbutils.click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配主页图标<<<")
@@ -502,9 +536,10 @@ def home():
 def examine_return():
     logging.info("正在匹配返回图标>>>")
     try:
+        adbutils.get_screenshot(device)
         if get_coordinate(return_icon, confidence):
             x, y = get_coordinate(coordinate_icon, confidence)
-            pyautogui.click(x, y)
+            adbutils.click(device, x, y)
             time.sleep(3)
             find_close()
             time.sleep(3)
@@ -514,30 +549,12 @@ def examine_return():
 
 # 缩小窗口
 def zoom_out():
-    logging.info("正在缩小窗口>>>")
-    window_center_x = window_left + window_width // 2
-    window_center_y = window_top + window_height // 2
-    pyautogui.moveTo(window_center_x, window_center_y)
-    scroll_amount = -1000
-    for i in range(30):
-        pyautogui.keyDown("ctrl")
-        pyautogui.scroll(scroll_amount)
-        pyautogui.keyUp("ctrl")
+    adbutils.zoom_out(device)
 
 
 # 放大窗口
 def zoom_in():
-    window_center_x = window_left + window_width // 2
-    window_center_y = window_top + window_height // 2
-    pyautogui.moveTo(window_center_x, window_center_y)
-    scroll_amount = 1000
-    if window_name == 'Space Armada':
-        for i in range(30):
-            pyautogui.scroll(scroll_amount)
-    else:
-        pyautogui.keyDown("ctrl")
-        pyautogui.scroll(scroll_amount)
-        pyautogui.keyUp("ctrl")
+    adbutils.zoom_in(device)
 
 
 # 重置视角流程
@@ -549,6 +566,7 @@ def reset_process():
     space_station()
     star_system()
     zoom_out()
+    find_close()
     time.sleep(3)
 
 
