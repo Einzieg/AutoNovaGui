@@ -33,7 +33,7 @@ class GuiApp:
         self.root = root
         self.root.title("AutoNovaGui")
         self.root.iconbitmap(resource_path("static/ico/auto.ico"))
-        self.root.geometry("800x800")
+        self.root.geometry("850x800")
         self.root.resizable(False, False)
         self.config_file = 'config.ini'
         self.setup_ui()
@@ -55,7 +55,7 @@ class GuiApp:
 
         # 配置
         self.virtual_num = tk.IntVar(value=0)
-        self.offset = tk.DoubleVar(value=3)
+        self.offset = tk.IntVar(value=3)
         self.confidence = tk.DoubleVar(value=0.75)
         self.monster_confidence = tk.DoubleVar(value=0.65)
         self.corpse_confidence = tk.DoubleVar(value=0.65)
@@ -77,6 +77,7 @@ class GuiApp:
         self.if_wreckage = tk.BooleanVar(value=True)
         self.if_apocalypse = tk.BooleanVar(value=False)
         self.if_hidden = tk.BooleanVar(value=False)
+        self.if_hidden_gec = tk.BooleanVar(value=False)
         self.if_order = tk.BooleanVar(value=False)
 
         self.__tk_check_button_if_elite_monsters(self.run_options_frame).config(variable=self.if_elite_monsters)
@@ -84,6 +85,7 @@ class GuiApp:
         self.__tk_check_button_if_wreckage(self.run_options_frame).config(variable=self.if_wreckage)
         self.__tk_check_button_if_apocalypse(self.run_options_frame).config(variable=self.if_apocalypse)
         self.__tk_check_button_if_hidden(self.run_options_frame).config(variable=self.if_hidden)
+        self.__tk_check_button_if_hidden_gec(self.run_options_frame).config(variable=self.if_hidden_gec)
         self.__tk_check_button_if_orders(self.run_options_frame).config(variable=self.if_order)
 
     def __tk_button_start_btn(self, parent):
@@ -100,7 +102,7 @@ class GuiApp:
 
     def __tk_text_window_log(self, parent):
         text = ScrolledText(parent, wrap=tk.WORD)
-        text.place(x=10, y=400, width=780, height=390)
+        text.place(x=10, y=400, width=830, height=390)
         return text
 
     def __tk_label_frame_lxq1wys2(self, parent):
@@ -160,7 +162,7 @@ class GuiApp:
 
     def __tk_label_frame_run_choose(self, parent):
         frame = LabelFrame(parent, text="运行选择")
-        frame.place(x=620, y=10, width=160, height=380)
+        frame.place(x=610, y=10, width=230, height=380)
         return frame
 
     def __tk_check_button_if_elite_monsters(self, parent):
@@ -188,6 +190,11 @@ class GuiApp:
         cb.place(x=10, y=162, width=80, height=30)
         return cb
 
+    def __tk_check_button_if_hidden_gec(self, parent):
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="使用GEC")
+        cb.place(x=120, y=162, width=100, height=30)
+        return cb
+
     def __tk_check_button_if_orders(self, parent):
         cb = Checkbutton(parent, bootstyle="round-toggle", text="订单")
         cb.place(x=10, y=202, width=80, height=30)
@@ -200,7 +207,7 @@ class GuiApp:
 
         log_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.DEBUG)
+        root_logger.setLevel(logging.INFO)
 
         log_file_handler = logging.FileHandler(filename=os.path.join(log_dir, f"AutoNova_{datetime.now().strftime('%Y-%m-%d')}.log"), mode='a', encoding='utf-8')
         log_file_handler.setFormatter(log_formatter)
@@ -253,7 +260,7 @@ class GuiApp:
         if os.path.exists(self.config_file):
             config.read(self.config_file)
             self.virtual_num.set(config.get('Settings', 'virtual_num', fallback=0))
-            self.offset.set(config.getfloat('Settings', 'offset', fallback=3))
+            self.offset.set(config.getint('Settings', 'offset', fallback=3))
             self.confidence.set(config.getfloat('Settings', 'confidence', fallback=0.75))
             self.monster_confidence.set(config.getfloat('Settings', 'monster_confidence', fallback=0.65))
             self.corpse_confidence.set(config.getfloat('Settings', 'corpse_confidence', fallback=0.65))
@@ -262,6 +269,7 @@ class GuiApp:
             self.if_wreckage.set(config.getboolean('Settings', 'if_wreckage', fallback=True))
             self.if_apocalypse.set(config.getboolean('Settings', 'if_apocalypse', fallback=False))
             self.if_hidden.set(config.getboolean('Settings', 'if_hidden', fallback=False))
+            self.if_hidden_gec.set(config.getboolean('Settings', 'if_hidden_gec', fallback=False))
             self.if_order.set(config.getboolean('Settings', 'if_order', fallback=False))
 
     def save_config(self):
@@ -277,6 +285,7 @@ class GuiApp:
             'if_wreckage': self.if_wreckage.get(),
             'if_apocalypse': self.if_apocalypse.get(),
             'if_hidden': self.if_hidden.get(),
+            'if_hidden_gec': self.if_hidden_gec.get(),
             'if_order': self.if_order.get()
         }
         with open(self.config_file, 'w') as configfile:
@@ -299,6 +308,7 @@ class GuiApp:
                        self.if_wreckage.get(),
                        self.if_apocalypse.get(),
                        self.if_hidden.get(),
+                       self.if_hidden_gec.get(),
                        self.if_order.get()
                        )
             time.sleep(6)
@@ -313,7 +323,7 @@ class GuiApp:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    # logging.basicConfig(level=logging.DEBUG)
     root = Window(themename='darkly')
     app = GuiApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口

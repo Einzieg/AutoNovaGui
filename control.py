@@ -5,7 +5,6 @@ import sys
 import time
 
 import cv2
-from matplotlib import pyplot as plt
 
 import adbutils
 
@@ -77,6 +76,12 @@ button_use_props = cv2.imread(resource_path('static/novaimgs/game_button/button_
 button_max = cv2.imread(resource_path('static/novaimgs/game_button/button_max.png'), cv2.IMREAD_GRAYSCALE)
 # 加载使用能量图标
 button_use_energy = cv2.imread(resource_path('static/novaimgs/game_button/energy.png'), cv2.IMREAD_GRAYSCALE)
+# 加载购买图标
+button_buy = cv2.imread(resource_path('static/novaimgs/game_button/button_buy.png'), cv2.IMREAD_GRAYSCALE)
+# 加载使用GEC购买能量图标
+button_use_gec_buy_energy = cv2.imread(resource_path('static/novaimgs/game_button/gec_buy_energy.png'), cv2.IMREAD_GRAYSCALE)
+# 加载确认重登按钮
+button_relogin = cv2.imread(resource_path('static/novaimgs/game_button/button_confirm_relogin.png'), cv2.IMREAD_GRAYSCALE)
 
 # 禁止点击区
 no_click_zones = [
@@ -104,13 +109,14 @@ if_elite_monster = False
 if_apocalypse = False
 if_wreckage = False
 if_hidden = False
+if_hidden_gec = False
 if_orders = False
 device = None
 
 
 def initialize(game_virtual_num, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence,
                game_if_elite_monster, game_if_normal_monster, game_if_wreckage, game_if_apocalypse,
-               game_if_hidden, game_if_orders):
+               game_if_hidden, game_if_hidden_gec, game_if_orders):
     logging.info("正在初始化...")
     global device
     # try:
@@ -136,7 +142,7 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     # global window_left, window_top, window_width, window_height
     global offset, confidence, monster_confidence, corpse_confidence
     global if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage
-    global if_hidden, if_orders
+    global if_hidden, if_hidden_gec, if_orders
     # window_left, window_top, window_width, window_height = window.left, window.top, window.width, window.height
 
     # virtual_num = game_window_name
@@ -149,14 +155,15 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     if_apocalypse = game_if_apocalypse
     if_wreckage = game_if_wreckage
     if_hidden = game_if_hidden
+    if_hidden_gec = game_if_hidden_gec
     if_orders = game_if_orders
 
     # logging.info(f"窗口名称：{window_name}")
     # logging.info(f"窗口位置：{window_left}, {window_top}, {window_width}, {window_height}")
     logging.info(f"偏移量：{offset}")
-    logging.info(f"通用识别置信度：{confidence}")
-    logging.info(f"怪物识别置信度：{monster_confidence}")
-    logging.info(f"残骸识别置信度：{corpse_confidence}")
+    logging.info(f"通用识别置信度：{confidence:.2%}")
+    logging.info(f"怪物识别置信度：{monster_confidence:.2%}")
+    logging.info(f"残骸识别置信度：{corpse_confidence:.2%}")
     if if_hidden:
         logging.info("开启刷隐秘,其它功能将被关闭")
         if_reset, if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage, if_orders = False, False, False, False, False, False
@@ -177,7 +184,11 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
 # 根据图片返回屏幕坐标
 def get_coordinate(img, believe, forbidden_zones=None):
     # adbutils.get_screenshot(device)
-    screenshot = cv2.imread(resource_path('screenshot.png'), cv2.IMREAD_GRAYSCALE)
+    screenshot = cv2.imread('screenshot.png', cv2.IMREAD_GRAYSCALE)
+
+    logging.debug(f"Img path: {resource_path('screenshot.png')}")
+    logging.debug(f"Img size: {screenshot.shape}")
+    logging.debug(f"Template size : {img.shape}")
 
     if forbidden_zones is not None:
         for zone in no_click_zones:
@@ -188,7 +199,7 @@ def get_coordinate(img, believe, forbidden_zones=None):
 
     result = cv2.matchTemplate(screenshot, img, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    logging.info(f"匹配置信度：{max_val}")
+    logging.info(f"匹配置信度：{max_val:.2%}")
     if max_val >= believe:
         icon_w, icon_h = img.shape[::-1]
         # ===============
@@ -251,6 +262,7 @@ def find_normal_monster_coordinates(believe):
 
 # 依次匹配深红怪模板
 def find_red_monster_coordinates(believe):
+    logging.info("正在寻找深红怪>>>")
     adbutils.get_screenshot(device)
     for template in red_monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
@@ -347,7 +359,7 @@ def attack_apocalypse_process():
         select_all()
         confirm()
         logging.info("刷深红流程结束<<<")
-        time.sleep(60)
+        time.sleep(90)
 
         attack_apocalypse_process()
     except TypeError:
@@ -440,6 +452,18 @@ def find_use():
         return False
 
 
+def find_buy():
+    logging.info("正在匹配购买图标>>>")
+    try:
+        adbutils.get_screenshot(device)
+        x, y = get_coordinate(button_buy, confidence)
+        adbutils.click(device, x, y)
+        time.sleep(3)
+        return True
+    except TypeError:
+        return False
+
+
 # 点击max
 def find_max():
     logging.info("正在匹配max图标>>>")
@@ -458,21 +482,34 @@ def find_use_props():
     time.sleep(3)
 
 
+# 使用GEC购买能量
+def find_use_gec_buy_energy():
+    logging.info("正在匹配购买能量图标>>>")
+    adbutils.get_screenshot(device)
+    x, y = get_coordinate(button_use_gec_buy_energy, confidence)
+    adbutils.click(device, x, y)
+    time.sleep(3)
+
+
 # 刷隐秘流程
 def hide_process():
     logging.info("开始刷隐秘流程>>>")
     try:
         find_radar()
         find_search()
-        if find_use():
-            # find_use()
+        if find_use() | find_buy():
             find_max()
-            find_use_props()
+            try:
+                find_use_props()
+            except TypeError:
+                if if_hidden_gec:
+                    find_use_gec_buy_energy()
             find_search()
         attack_monsters()
         find_repair()
         select_all()
         confirm()
+
     except TypeError:
         logging.info("未匹配<<<")
 
@@ -532,6 +569,16 @@ def home():
         logging.info("未匹配主页图标<<<")
 
 
+def relogin():
+    try:
+        adbutils.get_screenshot(device)
+        x, y = get_coordinate(button_relogin, confidence)
+        adbutils.click(device, x, y)
+        time.sleep(3)
+    except TypeError:
+        return
+
+
 # 返回按钮检查
 def examine_return():
     logging.info("正在匹配返回图标>>>")
@@ -560,6 +607,7 @@ def zoom_in():
 # 重置视角流程
 def reset_process():
     logging.info("正在重置视角>>>")
+    relogin()
     find_close()
     home()
     examine_return()
