@@ -186,10 +186,6 @@ def get_coordinate(img, believe, forbidden_zones=None):
     # adbutils.get_screenshot(device)
     screenshot = cv2.imread('screenshot.png', cv2.IMREAD_GRAYSCALE)
 
-    logging.debug(f"Img path: {resource_path('screenshot.png')}")
-    logging.debug(f"Img size: {screenshot.shape}")
-    logging.debug(f"Template size : {img.shape}")
-
     if forbidden_zones is not None:
         for zone in no_click_zones:
             left, top, right, bottom = zone

@@ -3,10 +3,8 @@ import os
 import sys
 import time
 
-from adb_shell.adb_device import AdbDeviceTcp
-from adb_shell.exceptions import TcpTimeoutException
+from AdbClient import AdbClient
 
-logging.basicConfig(level=logging.INFO)
 
 
 # n = 6  # n为模拟器编号，初始为0
@@ -25,8 +23,8 @@ def resource_path(relative_path):
 
 
 def adb_connect(n):
-    device = AdbDeviceTcp('127.0.0.1', 16384 + 32 * n)
-    device.connect(read_timeout_s=30)
+    device = AdbClient(ip='127.0.0.1', port=16384 + 32 * n)
+    # device.connect(read_timeout_s=30)
     return device
 
 
@@ -42,15 +40,8 @@ def swipe(device, start_x, start_y, end_x, end_y, duration):
 
 def zoom_out(device):
     logging.debug("zoom out")
-    try:
-        device.shell("sh /sdcard/zoom_out.sh", read_timeout_s=30)  # try running the script to pinchout
-        # time.sleep(10)
-        # device.shell("sh /sdcard/zoom_out.sh")
-        # # time.sleep(10)
-        # device.shell("sh /sdcard/zoom_out.sh")
-    except TcpTimeoutException as e:
-        logging.error(e)
-        zoom_out(device)
+    device.shell("sh /sdcard/zoom_out.sh")  # try running the script to pinchout
+
 
 
 def zoom_in(device):
@@ -77,8 +68,8 @@ def send_scripts(device):
     device.push(resource_path("static/zoom_out.sh"), "/sdcard/zoom_out.sh")
 
 
-devic = adb_connect(0)
-# get_screenshot(device)
-send_scripts(devic)
-zoom_out(devic)
-devic.close()
+# devic = adb_connect(0)
+# get_screenshot(devic)
+# send_scripts(devic)
+# zoom_out(devic)
+# devic.disconnect()

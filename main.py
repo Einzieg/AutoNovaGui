@@ -207,7 +207,7 @@ class GuiApp:
 
         log_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)
+        root_logger.setLevel(logging.DEBUG)
 
         log_file_handler = logging.FileHandler(filename=os.path.join(log_dir, f"AutoNova_{datetime.now().strftime('%Y-%m-%d')}.log"), mode='a', encoding='utf-8')
         log_file_handler.setFormatter(log_formatter)
@@ -315,7 +315,7 @@ class GuiApp:
             while self.running:
                 main_loop()
                 time.sleep(3)
-        except ConnectionRefusedError as e:
+        except ConnectionError as e:
             logging.error(f"连接模拟器失败: {e}")
             self.stop_script()
         except Exception as e:
@@ -323,7 +323,6 @@ class GuiApp:
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.DEBUG)
     root = Window(themename='darkly')
     app = GuiApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口
