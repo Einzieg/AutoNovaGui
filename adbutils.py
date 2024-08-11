@@ -6,12 +6,6 @@ import time
 from AdbClient import AdbClient
 
 
-
-# n = 6  # n为模拟器编号，初始为0
-
-
-# device = AdbDeviceTcp('127.0.0.1', 16384 + 32 * n)
-
 def resource_path(relative_path):
     """获取资源文件的绝对路径"""
     try:
@@ -23,8 +17,8 @@ def resource_path(relative_path):
 
 
 def adb_connect(n):
+    adb_path = os.path.join("static/platform-tools", "adb.exe")
     device = AdbClient(ip='127.0.0.1', port=16384 + 32 * n)
-    # device.connect(read_timeout_s=30)
     return device
 
 
@@ -41,7 +35,6 @@ def swipe(device, start_x, start_y, end_x, end_y, duration):
 def zoom_out(device):
     logging.debug("zoom out")
     device.shell("sh /sdcard/zoom_out.sh")  # try running the script to pinchout
-
 
 
 def zoom_in(device):
@@ -66,7 +59,6 @@ def send_scripts(device):
     logging.debug("send scripts")
     device.push(resource_path("static/zoom_in.sh"), "/sdcard/zoom_in.sh")
     device.push(resource_path("static/zoom_out.sh"), "/sdcard/zoom_out.sh")
-
 
 # devic = adb_connect(0)
 # get_screenshot(devic)

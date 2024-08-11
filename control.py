@@ -610,7 +610,6 @@ def reset_process():
     space_station()
     star_system()
     zoom_out()
-    find_close()
     time.sleep(3)
 
 

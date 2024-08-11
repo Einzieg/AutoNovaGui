@@ -1,9 +1,11 @@
 import logging
+import os
+import sys
 import subprocess
 
 
 class AdbClient:
-    def __init__(self, ip=None, port=5555):
+    def __init__(self, ip=None, port=5555, adb_path=None):
         """
         初始化AdbClient实例。
         :param ip: 设备IP地址，默认为None，如果提供IP则通过TCP连接设备。
@@ -11,6 +13,16 @@ class AdbClient:
         """
         self.ip = ip
         self.port = port
+        if adb_path is None:
+            # 如果 adb_path 未提供，则使用当前工作目录下的相对路径
+            if getattr(sys, 'frozen', False):
+                # 如果是打包的环境
+                base_path = sys._MEIPASS  # 获取打包后的临时目录
+            else:
+                base_path = os.getcwd()  # 否则使用当前工作目录
+            self.adb_path = os.path.join(base_path, 'static/platform-tools', 'adb.exe')
+        else:
+            self.adb_path = adb_path
         if ip:
             self.connect_tcp()
 
@@ -18,7 +30,7 @@ class AdbClient:
         """
         通过TCP连接到设备。
         """
-        command = f"adb connect {self.ip}:{self.port}"
+        command = f"connect {self.ip}:{self.port}"
         result = self._run_command(command)
         if "connected to" in result:
             logging.debug(f"已成功连接到 {self.ip}:{self.port}")
@@ -30,7 +42,7 @@ class AdbClient:
         断开与设备的连接。
         """
         if self.ip:
-            command = f"adb disconnect {self.ip}:{self.port}"
+            command = f"disconnect {self.ip}:{self.port}"
             self._run_command(command)
             logging.debug(f"断开连接 {self.ip}:{self.port}")
 
@@ -40,7 +52,7 @@ class AdbClient:
         :param command: 要执行的shell命令。
         :return: 命令输出结果。
         """
-        command = f"adb shell {command}"
+        command = f"shell {command}"
         return self._run_command(command)
 
     def pull(self, remote_path, local_path):
@@ -49,7 +61,7 @@ class AdbClient:
         :param remote_path: 设备上的文件路径。
         :param local_path: 本地保存路径。
         """
-        command = f"adb pull {remote_path} {local_path}"
+        command = f"pull {remote_path} {local_path}"
         self._run_command(command)
         logging.debug(f"拉取 {remote_path} 至 {local_path}")
 
@@ -59,7 +71,7 @@ class AdbClient:
         :param local_path: 本地文件路径。
         :param remote_path: 设备上的保存路径。
         """
-        command = f"adb push {local_path} {remote_path}"
+        command = f"push {local_path} {remote_path}"
         self._run_command(command)
         logging.debug(f"推送 {local_path} 至 {remote_path}")
 
@@ -69,15 +81,17 @@ class AdbClient:
         :param command: 要执行的系统命令。
         :return: 命令的输出结果。
         """
+        full_command = f"{self.adb_path} {command}"
+        logging.debug(f"运行命令: {full_command}")
         try:
-            result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode != 0:
                 raise RuntimeError(f"命令失败并出现错误: {result.stderr.strip()}")
             return result.stdout.strip()
         except Exception as e:
             raise RuntimeError(f"无法运行命令 '{command}': {str(e)}")
 
-# 示例使用
+
 # if __name__ == "__main__":
 #     adb = AdbClient(ip="192.168.1.100")  # TCP连接设备
 #     print(adb.shell("ls /sdcard"))  # 执行shell命令
