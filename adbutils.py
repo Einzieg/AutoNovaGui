@@ -9,7 +9,7 @@ from AdbClient import AdbClient
 def resource_path(relative_path):
     """获取资源文件的绝对路径"""
     try:
-        base_path = sys._MEIPASS
+        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     except AttributeError:
         base_path = os.path.abspath(".")
 
@@ -17,7 +17,6 @@ def resource_path(relative_path):
 
 
 def adb_connect(n):
-    adb_path = os.path.join("static/platform-tools", "adb.exe")
     device = AdbClient(ip='127.0.0.1', port=16384 + 32 * n)
     return device
 

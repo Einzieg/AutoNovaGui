@@ -17,9 +17,8 @@ import adbutils
 
 
 def resource_path(relative_path):
-    """获取资源文件的绝对路径"""
     try:
-        base_path = sys._MEIPASS
+        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     except AttributeError:
         base_path = os.path.abspath(".")
 
@@ -99,7 +98,7 @@ no_click_zones = [
 
 # window_left, window_top, window_width, window_height = None, None, None, None
 # virtual_num = None
-offset = None
+offset = 3
 confidence = None
 monster_confidence = None
 corpse_confidence = None
@@ -118,34 +117,15 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
                game_if_elite_monster, game_if_normal_monster, game_if_wreckage, game_if_apocalypse,
                game_if_hidden, game_if_hidden_gec, game_if_orders):
     logging.info("正在初始化...")
+
     global device
-    # try:
     device = adbutils.adb_connect(game_virtual_num)
     adbutils.send_scripts(device)
-    # except Exception as e:
-    #     logging.error(e)
-    # window = gw.getWindowsWithTitle(game_window_name)
-    # if window:
-    #     window = window[0]
-    #     window.maximize()  # 最大化窗口
-    #     window.activate()  # 将窗口置顶
-    #     if game_window_name == 'Space Armada':
-    #         pyautogui.hotkey('alt', 'enter')
-    #         print("")
-    #     else:
-    #         pyautogui.hotkey('F11')
-    # else:
-    #     logging.error('未找到窗口，请检查是否已打开游戏窗口。')
-    #     return False
 
     global if_reset
-    # global window_left, window_top, window_width, window_height
     global offset, confidence, monster_confidence, corpse_confidence
-    global if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage
-    global if_hidden, if_hidden_gec, if_orders
-    # window_left, window_top, window_width, window_height = window.left, window.top, window.width, window.height
+    global if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage, if_hidden, if_hidden_gec, if_orders
 
-    # virtual_num = game_window_name
     offset = game_offset
     confidence = game_confidence
     monster_confidence = game_monster_confidence
@@ -158,8 +138,6 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     if_hidden_gec = game_if_hidden_gec
     if_orders = game_if_orders
 
-    # logging.info(f"窗口名称：{window_name}")
-    # logging.info(f"窗口位置：{window_left}, {window_top}, {window_width}, {window_height}")
     logging.info(f"偏移量：{offset}")
     logging.info(f"通用识别置信度：{confidence:.2%}")
     logging.info(f"怪物识别置信度：{monster_confidence:.2%}")
@@ -183,7 +161,7 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
 
 # 根据图片返回屏幕坐标
 def get_coordinate(img, believe, forbidden_zones=None):
-    # adbutils.get_screenshot(device)
+
     screenshot = cv2.imread('screenshot.png', cv2.IMREAD_GRAYSCALE)
 
     if forbidden_zones is not None:
@@ -215,12 +193,6 @@ def get_coordinate(img, believe, forbidden_zones=None):
         logging.info(f"匹配成功，坐标 [{screen_x}, {screen_y}]")
         return screen_x, screen_y
     return None
-
-
-# def click(x, y, sleep):
-#     pyautogui.mouseDown(x, y)
-#     time.sleep(sleep)
-#     pyautogui.mouseUp(x, y)
 
 
 # ------------------------------------------------------------------------
@@ -570,7 +542,7 @@ def relogin():
         adbutils.get_screenshot(device)
         x, y = get_coordinate(button_relogin, confidence)
         adbutils.click(device, x, y)
-        time.sleep(3)
+        time.sleep(10)
     except TypeError:
         return
 
@@ -611,12 +583,6 @@ def reset_process():
     star_system()
     zoom_out()
     time.sleep(3)
-
-
-def close_game():
-    logging.info("正在关闭游戏>>>")
-    os.system("taskkill /f /im SpaceArmada.exe")
-    os.system("D:\Software\MuMuPlayer-12.0\shell\MuMuManager.exe api -v 5 shutdown_player")
 
 
 # 主循环

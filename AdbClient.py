@@ -17,7 +17,7 @@ class AdbClient:
             # 如果 adb_path 未提供，则使用当前工作目录下的相对路径
             if getattr(sys, 'frozen', False):
                 # 如果是打包的环境
-                base_path = sys._MEIPASS  # 获取打包后的临时目录
+                base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))  # 获取打包后的临时目录
             else:
                 base_path = os.getcwd()  # 否则使用当前工作目录
             self.adb_path = os.path.join(base_path, 'static/platform-tools', 'adb.exe')
@@ -32,7 +32,7 @@ class AdbClient:
         """
         command = f"connect {self.ip}:{self.port}"
         result = self._run_command(command)
-        if "connected to" in result:
+        if result is not None and "connected to" in result:
             logging.debug(f"已成功连接到 {self.ip}:{self.port}")
         else:
             raise ConnectionError(f"无法连接到 {self.ip}:{self.port}: {result}")
@@ -86,8 +86,8 @@ class AdbClient:
         try:
             result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode != 0:
-                raise RuntimeError(f"命令失败并出现错误: {result.stderr.strip()}")
-            return result.stdout.strip()
+                raise RuntimeError(f"命令失败并出现错误: {result.stderr}")
+            return result.stdout
         except Exception as e:
             raise RuntimeError(f"无法运行命令 '{command}': {str(e)}")
 

@@ -7,6 +7,7 @@ pip install -r requirements.txt
 ```shell
 pyinstaller main.spec
 ```
+
 - [ ]  TODO 自定义次数
 - [ ]  TODO 结束后关闭
 - [ ]  TODO 大星系适配
@@ -16,4 +17,6 @@ pyinstaller main.spec
 - [x]  TODO 自动隐秘
 - [ ]  TODO 自动订单
 - [ ]  TODO 移动端适配
+- [x]  TODO 无感操作（纯后台执行）
 - [ ]  TODO 自定义运行时间
+- [ ]  TODO 攻击前检测舰队是否战斗中

@@ -317,12 +317,16 @@ class GuiApp:
                 time.sleep(3)
         except ConnectionError as e:
             logging.error(f"连接模拟器失败: {e}")
-            self.stop_script()
+            self.stop_button.place_forget()
+            self.start_button.place(x=50, y=150, width=200, height=100)
         except Exception as e:
             logging.error(f"主函数异常: {e}")
+            self.stop_button.place_forget()
+            self.start_button.place(x=50, y=150, width=200, height=100)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     root = Window(themename='darkly')
     app = GuiApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口
