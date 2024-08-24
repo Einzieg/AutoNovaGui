@@ -23,7 +23,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AutoNovaGui-3.0.0-Bata',
+    name='AutoNovaGui-3.2.0-Bata',
     icon='static/ico/auto.ico',
     debug=False,
     bootloader_ignore_signals=False,

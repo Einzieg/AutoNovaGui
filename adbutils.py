@@ -24,10 +24,9 @@ def adb_connect(n):
 def get_screenshot(device):
     device.shell("screencap -p /sdcard/screenshot.png")
     device.pull('/sdcard/screenshot.png', 'screenshot.png')
-    # time.sleep(1)  # 图片传输可能会有延迟
 
 
-def swipe(device, start_x, start_y, end_x, end_y, duration):
+def swipe(device, start_x, start_y, end_x, end_y):
     device.shell(f"input touchscreen swipe {start_x} {start_y} {end_x} {end_y} 200")
 
 
@@ -59,8 +58,10 @@ def send_scripts(device):
     device.push(resource_path("static/zoom_in.sh"), "/sdcard/zoom_in.sh")
     device.push(resource_path("static/zoom_out.sh"), "/sdcard/zoom_out.sh")
 
-# devic = adb_connect(0)
+
+# devic = adb_connect(1)
 # get_screenshot(devic)
+# click(devic, 0, 0)
 # send_scripts(devic)
 # zoom_out(devic)
 # devic.disconnect()

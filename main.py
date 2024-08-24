@@ -3,6 +3,7 @@ import ctypes
 import inspect
 import logging
 import os
+import sys
 import threading
 import time
 
@@ -10,7 +11,6 @@ from ttkbootstrap import *
 
 from control import initialize
 from control import main_loop
-from control import resource_path
 
 
 class TextHandler(logging.Handler):
@@ -26,6 +26,15 @@ class TextHandler(logging.Handler):
             self.text_widget.yview(tk.END)
 
         self.text_widget.after(0, append)
+
+
+def resource_path(relative_path):
+    try:
+        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class GuiApp:
@@ -59,17 +68,20 @@ class GuiApp:
         self.confidence = tk.DoubleVar(value=0.75)
         self.monster_confidence = tk.DoubleVar(value=0.65)
         self.corpse_confidence = tk.DoubleVar(value=0.65)
+        self.hidden_interval = tk.IntVar(value=60)
 
         self.__tk_label_setting_virtual_num(self.config_frame)
         self.__tk_label_setting_confidence(self.config_frame)
         self.__tk_label_setting_monster_confidence(self.config_frame)
         self.__tk_label_setting_corpse_confidence(self.config_frame)
         self.__tk_label_setting_offset(self.config_frame)
+        self.__tk_label_hidden_interval(self.config_frame)
         self.__tk_input_get_setting_virtual_num(self.config_frame).config(textvariable=self.virtual_num)
         self.__tk_input_get_setting_confidence(self.config_frame).config(textvariable=self.confidence)
         self.__tk_input_get_setting_monster_confidence(self.config_frame).config(textvariable=self.monster_confidence)
         self.__tk_input_get_setting_corpse_confidence(self.config_frame).config(textvariable=self.corpse_confidence)
         self.__tk_input_get_setting_offset(self.config_frame).config(textvariable=self.offset)
+        self.__tk_label_get_setting_hidden_interval(self.config_frame).config(textvariable=self.hidden_interval)
 
         self.run_options_frame = self.__tk_label_frame_run_choose(self.root)
         self.if_elite_monsters = tk.BooleanVar(value=True)
@@ -112,53 +124,63 @@ class GuiApp:
 
     def __tk_label_setting_virtual_num(self, parent):
         label = Label(parent, text="模拟器编号", anchor="center")
-        label.place(x=2, y=2, width=80, height=35)
+        label.place(x=2, y=2, width=100, height=35)
         return label
 
     def __tk_label_setting_confidence(self, parent):
-        label = Label(parent, text="通用置信", anchor="center")
-        label.place(x=2, y=40, width=80, height=35)
+        label = Label(parent, text="通用置信度", anchor="center")
+        label.place(x=2, y=40, width=100, height=35)
         return label
 
     def __tk_label_setting_monster_confidence(self, parent):
-        label = Label(parent, text="野怪置信", anchor="center")
-        label.place(x=2, y=78, width=80, height=35)
+        label = Label(parent, text="野怪置信度", anchor="center")
+        label.place(x=2, y=78, width=100, height=35)
         return label
 
     def __tk_label_setting_corpse_confidence(self, parent):
-        label = Label(parent, text="残骸置信", anchor="center")
-        label.place(x=2, y=116, width=80, height=35)
+        label = Label(parent, text="残骸置信度", anchor="center")
+        label.place(x=2, y=116, width=100, height=35)
         return label
 
     def __tk_label_setting_offset(self, parent):
-        label = Label(parent, text="偏移量", anchor="center")
-        label.place(x=2, y=154, width=80, height=35)
+        label = Label(parent, text="点击偏移量", anchor="center")
+        label.place(x=2, y=154, width=100, height=35)
+        return label
+
+    def __tk_label_hidden_interval(self, parent):
+        label = Label(parent, text="隐秘攻击间隔", anchor="center")
+        label.place(x=2, y=192, width=100, height=35)
         return label
 
     def __tk_input_get_setting_virtual_num(self, parent):
         ipt = Entry(parent)
-        ipt.place(x=90, y=2, width=200, height=35)
+        ipt.place(x=110, y=2, width=180, height=35)
         return ipt
 
     def __tk_input_get_setting_confidence(self, parent):
         ipt = Entry(parent)
-        ipt.place(x=90, y=40, width=200, height=35)
+        ipt.place(x=110, y=40, width=180, height=35)
         return ipt
 
     def __tk_input_get_setting_monster_confidence(self, parent):
         ipt = Entry(parent)
-        ipt.place(x=90, y=78, width=200, height=35)
+        ipt.place(x=110, y=78, width=180, height=35)
         return ipt
 
     def __tk_input_get_setting_corpse_confidence(self, parent):
         ipt = Entry(parent)
-        ipt.place(x=90, y=116, width=200, height=35)
+        ipt.place(x=110, y=116, width=180, height=35)
         return ipt
 
     def __tk_input_get_setting_offset(self, parent):
         ipt = Entry(parent)
-        ipt.place(x=90, y=154, width=200, height=35)
+        ipt.place(x=110, y=154, width=180, height=35)
         return ipt
+
+    def __tk_label_get_setting_hidden_interval(self, parent):
+        label = Entry(parent)
+        label.place(x=110, y=192, width=180, height=35)
+        return label
 
     def __tk_label_frame_run_choose(self, parent):
         frame = LabelFrame(parent, text="运行选择")
@@ -264,6 +286,7 @@ class GuiApp:
             self.confidence.set(config.getfloat('Settings', 'confidence', fallback=0.75))
             self.monster_confidence.set(config.getfloat('Settings', 'monster_confidence', fallback=0.65))
             self.corpse_confidence.set(config.getfloat('Settings', 'corpse_confidence', fallback=0.65))
+            self.hidden_interval.set(config.getint('Settings', 'hidden_interval', fallback=90))
             self.if_elite_monsters.set(config.getboolean('Settings', 'if_elite_monsters', fallback=True))
             self.if_normal_monster.set(config.getboolean('Settings', 'if_normal_monster', fallback=False))
             self.if_wreckage.set(config.getboolean('Settings', 'if_wreckage', fallback=True))
@@ -280,6 +303,7 @@ class GuiApp:
             'confidence': self.confidence.get(),
             'monster_confidence': self.monster_confidence.get(),
             'corpse_confidence': self.corpse_confidence.get(),
+            'hidden_interval': self.hidden_interval.get(),
             'if_elite_monsters': self.if_elite_monsters.get(),
             'if_normal_monster': self.if_normal_monster.get(),
             'if_wreckage': self.if_wreckage.get(),
@@ -303,6 +327,7 @@ class GuiApp:
                        self.confidence.get(),
                        self.monster_confidence.get(),
                        self.corpse_confidence.get(),
+                       self.hidden_interval.get(),
                        self.if_elite_monsters.get(),
                        self.if_normal_monster.get(),
                        self.if_wreckage.get(),

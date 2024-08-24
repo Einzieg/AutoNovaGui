@@ -1,7 +1,7 @@
 import logging
 import os
-import sys
 import subprocess
+import sys
 
 
 class AdbClient:
@@ -81,16 +81,15 @@ class AdbClient:
         :param command: 要执行的系统命令。
         :return: 命令的输出结果。
         """
-        full_command = f"{self.adb_path} {command}"
+        full_command = f"{self.adb_path} -s {self.ip}:{self.port} {command}"
         logging.debug(f"运行命令: {full_command}")
         try:
             result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode != 0:
-                raise RuntimeError(f"命令失败并出现错误: {result.stderr}")
+                raise RuntimeError(f"命令失败并出现错误: {result}")
             return result.stdout
         except Exception as e:
             raise RuntimeError(f"无法运行命令 '{command}': {str(e)}")
-
 
 # if __name__ == "__main__":
 #     adb = AdbClient(ip="192.168.1.100")  # TCP连接设备
