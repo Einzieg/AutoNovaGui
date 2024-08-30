@@ -66,7 +66,7 @@ radar_icon = cv_imread('static/novaimgs/隐秘/雷达.png')
 # 加载搜索图标
 search_icon = cv_imread('static/novaimgs/隐秘/搜索.png')
 # 加载维修图标
-repair_icon = cv_imread('static/novaimgs/按键/快速维修按钮.png')
+repair_icon = cv_imread('static/novaimgs/按键/快速维修.png')
 # 加载使用图标
 button_use_props = cv_imread('static/novaimgs/隐秘/使用道具.png')
 # 加载max图标
@@ -127,6 +127,7 @@ confidence = None
 monster_confidence = None
 corpse_confidence = None
 if_reset = True
+if_relogin = True
 if_normal_monster = False
 if_elite_monster = False
 if_apocalypse = False
@@ -136,26 +137,28 @@ if_hidden_gec = False
 if_orders = False
 device = None
 hidden_interval = 60
+relogin_time = 60
 
 
-def initialize(game_virtual_num, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence, game_hidden_interval,
-               game_if_elite_monster, game_if_normal_monster, game_if_wreckage, game_if_apocalypse,
-               game_if_hidden, game_if_hidden_gec, game_if_orders):
+def initialize(game_virtual_num, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence, game_hidden_interval, game_relogin_time,
+               game_if_elite_monster, game_if_normal_monster, game_if_wreckage, game_if_apocalypse, game_if_hidden, game_if_hidden_gec, game_if_orders, game_if_relogin):
     logging.info("正在初始化...")
 
     global device
     device = adbutils.adb_connect(game_virtual_num)
     adbutils.send_scripts(device)
 
-    global if_reset
-    global offset, confidence, monster_confidence, corpse_confidence, hidden_interval
+    global if_reset, if_relogin
+    global offset, confidence, monster_confidence, corpse_confidence, hidden_interval, relogin_time
     global if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage, if_hidden, if_hidden_gec, if_orders
 
     offset = game_offset
+    if_relogin = game_if_relogin
     confidence = game_confidence
     monster_confidence = game_monster_confidence
     corpse_confidence = game_corpse_confidence
     hidden_interval = game_hidden_interval
+    relogin_time = game_relogin_time
 
     if_normal_monster = game_if_normal_monster
     if_elite_monster = game_if_elite_monster
@@ -169,21 +172,25 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     logging.info(f"通用识别置信度：{confidence:.2%}")
     logging.info(f"怪物识别置信度：{monster_confidence:.2%}")
     logging.info(f"残骸识别置信度：{corpse_confidence:.2%}")
-    logging.info(f"隐秘攻击间隔：{hidden_interval}秒")
     if if_hidden:
         logging.info("开启刷隐秘,其它功能将被关闭")
+        logging.info(f"隐秘攻击间隔：{hidden_interval}秒")
         if_reset, if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage, if_orders = False, False, False, False, False, False
     if if_orders:
         logging.info("开启刷订单,其它功能将被关闭")
         if_reset, if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage, if_hidden = False, False, False, False, False, False
     if if_elite_monster:
         logging.info("开启刷精英怪")
+        if_reset = True
     if if_normal_monster:
         logging.info("开启刷普通怪")
+        if_reset = True
     if if_wreckage:
         logging.info("开启拾取残骸")
+        if_reset = True
     if if_apocalypse:
         logging.info("开启刷深红")
+        if_reset = True
     logging.info("初始化完成...")
 
 
@@ -759,9 +766,12 @@ def home():
 def relogin():
     try:
         adbutils.get_screenshot(device)
-        x, y = get_coordinate(button_relogin, confidence)
-        adbutils.click(device, x, y)
-        time.sleep(10)
+        coordinates = get_coordinate(button_relogin, confidence)
+        if coordinates is not None:
+            x, y = coordinates
+            time.sleep(relogin_time)
+            adbutils.click(device, x, y)
+            time.sleep(10)
     except TypeError:
         return
 
@@ -800,7 +810,8 @@ def zoom_in():
 # 重置视角流程
 def reset_process():
     logging.info("正在重置视角>>>")
-    relogin()
+    if if_relogin:
+        relogin()
     in_shortcut_examine()
     find_close()
     home()

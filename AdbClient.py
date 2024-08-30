@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 import sys
+import time
 
 
 class AdbClient:
@@ -33,7 +34,7 @@ class AdbClient:
         command = f"connect {self.ip}:{self.port}"
         result = self._run_command(command)
         if result is not None and "connected to" in result:
-            logging.debug(f"已成功连接到 {self.ip}:{self.port}")
+            logging.info(f"已成功连接到 {self.ip}:{self.port}")
         else:
             raise ConnectionError(f"无法连接到 {self.ip}:{self.port}: {result}")
 
@@ -84,7 +85,9 @@ class AdbClient:
         full_command = f"{self.adb_path} -s {self.ip}:{self.port} {command}"
         logging.debug(f"运行命令: {full_command}")
         try:
+            time_start = time.time()
             result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            logging.debug(f"执行耗时: {time.time() - time_start}")
             if result.returncode != 0:
                 raise RuntimeError(f"命令失败并出现错误: {result}")
             return result.stdout
