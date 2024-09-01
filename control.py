@@ -7,7 +7,7 @@ import time
 import cv2
 import numpy as np
 
-import adbutils
+from Adbutils import adb_connect, get_screenshot, zoom_out, click, send_scripts
 
 
 def cv_imread(relative_path):
@@ -145,8 +145,8 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     logging.info("正在初始化...")
 
     global device
-    device = adbutils.adb_connect(game_virtual_num)
-    adbutils.send_scripts(device)
+    device = adb_connect(game_virtual_num)
+    send_scripts(device)
 
     global if_reset, if_relogin
     global offset, confidence, monster_confidence, corpse_confidence, hidden_interval, relogin_time
@@ -232,7 +232,7 @@ def get_coordinate(img, believe, forbidden_zones=None):
 # ------------------------------------------------------------------------
 # 依次匹配精英怪物模板
 def find_monster_coordinates(believe):
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     for template in monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -246,14 +246,14 @@ def find_monsters():
     logging.info("正在寻找精英怪>>>")
     coordinates = find_monster_coordinates(monster_confidence)
     x, y = coordinates
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
 # ------------------------------------------------------------------------
 # 依次匹配普通怪模板
 def find_normal_monster_coordinates(believe):
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     for template in normal_monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -265,7 +265,7 @@ def find_normal_monster_coordinates(believe):
 # 依次匹配深红怪模板
 def find_red_monster_coordinates(believe):
     logging.info("正在寻找深红怪>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     for template in red_monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -279,7 +279,7 @@ def find_normal_monsters():
     logging.info("正在寻找普通怪>>>")
     coordinates = find_normal_monster_coordinates(monster_confidence)
     x, y = coordinates
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
@@ -288,7 +288,7 @@ def find_red_monsters():
     logging.info("正在寻找深红怪>>>")
     coordinates = find_red_monster_coordinates(monster_confidence)
     x, y = coordinates
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
@@ -297,27 +297,27 @@ def find_red_monsters():
 # 点击攻击
 def attack_monsters():
     logging.info("正在匹配攻击图标>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     x, y = get_coordinate(attack_icon, confidence)
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
 # 选择全部
 def select_all():
     logging.info("正在匹配选择全部图标>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     x, y = get_coordinate(select_all_icon, confidence)
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
 # 确定
 def confirm():
     logging.info("正在匹配确定图标>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     x, y = get_coordinate(confirm_icon, confidence)
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
     # global ATTACKS_NO
@@ -371,7 +371,7 @@ def attack_apocalypse_process():
 # ------------------------------------------------------------------------
 # 依次匹配残骸图标
 def find_debris_coordinates(believe):
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     for template in debris_templates:
         coords = get_coordinate(template, believe, no_click_zones)
         if coords is not None:
@@ -384,15 +384,15 @@ def find_debris():
     logging.info("正在寻找残骸>>>")
     coordinates = find_debris_coordinates(corpse_confidence)
     x, y = coordinates
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
 def collect():
     logging.info("正在匹配采集图标>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     x, y = get_coordinate(collect_icon, confidence)
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
@@ -415,9 +415,9 @@ def debris_process():
 def find_radar():
     logging.info("正在匹配雷达图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(radar_icon, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配雷达图标<<<")
@@ -427,9 +427,9 @@ def find_radar():
 def find_search():
     logging.info("正在匹配搜索图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(search_icon, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配搜索图标<<<")
@@ -439,9 +439,9 @@ def find_search():
 def find_repair():
     logging.info("正在匹配维修图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(repair_icon, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配维修图标<<<")
@@ -451,9 +451,9 @@ def find_repair():
 def find_use():
     logging.info("正在匹配使用图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_use_props, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
         return True
     except TypeError:
@@ -463,9 +463,9 @@ def find_use():
 def find_buy():
     logging.info("正在匹配购买图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_buy, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
         return True
     except TypeError:
@@ -476,9 +476,9 @@ def find_buy():
 def find_max():
     try:
         logging.info("正在匹配max图标>>>")
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_max, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配max图标<<<")
@@ -487,18 +487,18 @@ def find_max():
 # 点击使用道具
 def find_use_props():
     logging.info("正在匹配使用道具图标>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     x, y = get_coordinate(button_use_energy, confidence)
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
 # 使用GEC购买能量
 def find_use_gec_buy_energy():
     logging.info("正在匹配购买能量图标>>>")
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     x, y = get_coordinate(button_use_gec_buy_energy, confidence)
-    adbutils.click(device, x, y)
+    click(device, x, y)
     time.sleep(3)
 
 
@@ -532,9 +532,9 @@ def hide_process():
 def open_system():
     logging.info("正在匹配系统图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_system, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配系统图标<<<")
@@ -544,9 +544,9 @@ def open_talent():
     logging.info("正在匹配天赋图标>>>")
 
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_talent, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配天赋图标<<<")
@@ -555,9 +555,9 @@ def open_talent():
 def change_talent():
     logging.info("正在匹配修改天赋图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_change_talent, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配修改天赋图标<<<")
@@ -566,9 +566,9 @@ def change_talent():
 def change_talent_rc():
     logging.info("正在匹配获得RC增加图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_talent_increase_rc, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配获得RC增加图标<<<")
@@ -577,9 +577,9 @@ def change_talent_rc():
 def change_talent_order():
     logging.info("正在匹配订单数量增加图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_talent_increase_orders, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配订单数量增加图标<<<")
@@ -588,9 +588,9 @@ def change_talent_order():
 def confirm_change_talent():
     logging.info("正在匹配确认修改天赋图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_confirm_change_talent, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配确认修改天赋图标<<<")
@@ -613,9 +613,9 @@ def change_talent_process(talent: bool):
 def open_orders():
     logging.info("正在匹配订单图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_orders, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配订单图标<<<")
@@ -624,9 +624,9 @@ def open_orders():
 def deliver_all():
     logging.info("正在匹配一键交付图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_deliver_all, 0.48)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配一键交付图标<<<")
@@ -635,9 +635,9 @@ def deliver_all():
 def confirm_deliver():
     logging.info("正在匹配确认交付图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_confirm_deliver, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配确认交付图标<<<")
@@ -646,9 +646,9 @@ def confirm_deliver():
 def depart():
     logging.info("正在匹配离港图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_depart, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配离港图标<<<")
@@ -657,9 +657,9 @@ def depart():
 def close_orders():
     logging.info("正在匹配关闭订单图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_close_orders, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配关闭订单图标<<<")
@@ -668,9 +668,9 @@ def close_orders():
 def more_order():
     logging.info("正在匹配更多订单图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_more_orders, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配更多订单图标<<<")
@@ -679,9 +679,9 @@ def more_order():
 def next_order():
     logging.info("正在匹配下一批图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(button_next_orders, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配下一批图标<<<")
@@ -714,9 +714,9 @@ def orders_process():
 def space_station():
     logging.info("正在匹配空间站图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(space_station_icon, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配空间站图标<<<")
@@ -726,16 +726,16 @@ def space_station():
 def star_system():
     logging.info("正在匹配星系图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(star_system_icon, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配星系图标<<<")
 
 
 def find_close_icons(believe):
-    adbutils.get_screenshot(device)
+    get_screenshot(device)
     for template in close_icon:
         coords = get_coordinate(template, believe)
         if coords is not None:
@@ -749,15 +749,15 @@ def find_close():
     coordinates = find_close_icons(confidence)
     if coordinates:
         x, y = coordinates
-        adbutils.click(device, x, y)
+        click(device, x, y)
 
 
 def home():
     logging.info("正在匹配主页图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         x, y = get_coordinate(home_icon, confidence)
-        adbutils.click(device, x, y)
+        click(device, x, y)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配主页图标<<<")
@@ -765,12 +765,12 @@ def home():
 
 def relogin():
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         coordinates = get_coordinate(button_relogin, confidence)
         if coordinates is not None:
             x, y = coordinates
             time.sleep(relogin_time)
-            adbutils.click(device, x, y)
+            click(device, x, y)
             time.sleep(10)
     except TypeError:
         return
@@ -778,9 +778,9 @@ def relogin():
 
 def in_shortcut_examine():
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         if get_coordinate(in_shortcut, confidence) is not None:
-            adbutils.click(device, 0, 0)
+            click(device, 0, 0)
             time.sleep(3)
     except TypeError:
         return
@@ -790,21 +790,11 @@ def in_shortcut_examine():
 def examine_return():
     logging.info("正在匹配返回图标>>>")
     try:
-        adbutils.get_screenshot(device)
+        get_screenshot(device)
         if get_coordinate(return_icon, confidence):
-            adbutils.click(device, 0, 0)
+            click(device, 0, 0)
     except TypeError:
         logging.info("未匹配返回图标<<<")
-
-
-# 缩小窗口
-def zoom_out():
-    adbutils.zoom_out(device)
-
-
-# 放大窗口
-def zoom_in():
-    adbutils.zoom_in(device)
 
 
 # 重置视角流程
@@ -818,7 +808,7 @@ def reset_process():
     examine_return()
     space_station()
     star_system()
-    zoom_out()
+    zoom_out(device)
     time.sleep(3)
 
 
