@@ -7,7 +7,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('./static', './static')],
+    datas=[('./static', './static'),('screenshot.png', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -51,6 +51,5 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='AutoNovaGui.app',
-    # icon='./static/ico/auto.icns',
     bundle_identifier=None,
 )

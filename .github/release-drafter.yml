@@ -1,26 +1,42 @@
-name-template: 'v2.3.0'
-tag-template: 'v2.3.0'
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+template: |
+  # What's Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
 categories:
-  - title: '🚀 新功能'
-    labels:
-      - '新功能'
-  - title: '🐛 Bug 修复'
-    labels:
-      - 'bug'
-  - title: '🧰 日常维护'
-    label: '日常维护'
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
-change-title-escapes: '\<*_&'
+  - title: 'Breaking'
+    label: 'type: breaking'
+  - title: 'New'
+    label: 'type: feature'
+  - title: 'Bug Fixes'
+    label: 'type: bug'
+  - title: 'Maintenance'
+    label: 'type: maintenance'
+  - title: 'Documentation'
+    label: 'type: docs'
+  - title: 'Other changes'
+  - title: 'Dependency Updates'
+    label: 'type: dependencies'
+    collapse-after: 5
+
 version-resolver:
   major:
     labels:
-      - 'major'
+      - 'type: breaking'
   minor:
     labels:
-      - 'minor'
+      - 'type: feature'
   patch:
     labels:
-      - 'patch'
-  default: patch
-template: |
-  $CHANGES
+      - 'type: bug'
+      - 'type: maintenance'
+      - 'type: docs'
+      - 'type: dependencies'
+      - 'type: security'
+
+exclude-labels:
+  - 'skip-changelog'
