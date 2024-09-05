@@ -9,26 +9,26 @@ on:
 permissions: write-all # 给所有工作写权限
 
 jobs:
-  jobs_v:
-    name: 构建版本号和变更信息
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.create_version.outputs.tag_name }} # 版本号
-      body: ${{ steps.create_version.outputs.body }} # 版本变更内容
-    steps:
-      - uses: release-drafter/release-drafter@v5
-        id: create_version
-        with:
-          config-name: release-drafter.yml # 配置文件在 .github/release-drafter.yml
-          disable-autolabeler: true # 禁止自动标签
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 查看变量
-        run: |
-          echo ${{ format('version={0}', steps.create_version.outputs.tag_name ) }} 
+#   jobs_v:
+#     name: 构建版本号和变更信息
+#     runs-on: ubuntu-latest
+#     outputs:
+#       version: ${{ steps.create_version.outputs.tag_name }} # 版本号
+#       body: ${{ steps.create_version.outputs.body }} # 版本变更内容
+#     steps:
+#       - uses: release-drafter/release-drafter@v5
+#         id: create_version
+#         with:
+#           config-name: release-drafter.yml # 配置文件在 .github/release-drafter.yml
+#           disable-autolabeler: true # 禁止自动标签
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - name: 查看变量
+#         run: |
+#           echo ${{ format('version={0}', steps.create_version.outputs.tag_name ) }} 
 
   jobs_window:
-    needs: jobs_v # 等待 jobs_v 任务完成才执行
+    # needs: jobs_v # 等待 jobs_v 任务完成才执行
     name: 构建window软件
     runs-on: windows-2022
     env:
@@ -60,7 +60,7 @@ jobs:
           path: ./dist/*.exe
 
   jobs_macos:
-    needs: jobs_v
+    # needs: jobs_v
     name: 构建macos软件
     runs-on: macos-12
     env:
@@ -97,7 +97,7 @@ jobs:
 
 
   jobs4:
-    needs: [ jobs_v,jobs_window,jobs_macos ]
+    needs: [ jobs_window,jobs_macos ]
     name: 发布版本
     runs-on: ubuntu-latest
     env:
