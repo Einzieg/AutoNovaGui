@@ -9,7 +9,7 @@ on:
 permissions: write-all # 给所有工作写权限
 
 jobs:
-  jobs_v:
+  jobs_version:
     name: 构建版本号和变更信息
     runs-on: ubuntu-latest
     outputs:
@@ -27,9 +27,9 @@ jobs:
         run: |
           echo ${{ format('version={0}', steps.create_version.outputs.tag_name ) }} 
 
-  jobs_window:
-    needs: jobs_v # 等待 jobs_v 任务完成才执行
-    name: 构建window软件
+  jobs_windows:
+    needs: jobs_version
+    name: 构建windows软件
     runs-on: windows-2022
     env:
       version: ${{ needs.jobs_v.outputs.version }}
@@ -60,7 +60,7 @@ jobs:
           path: ./dist/*.exe
 
   jobs4:
-    needs: [ jobs_v,jobs_window ]
+    needs: [ jobs_version,jobs_windows ]
     name: 发布版本
     runs-on: ubuntu-latest
     env:
