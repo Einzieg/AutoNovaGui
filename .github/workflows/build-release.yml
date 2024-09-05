@@ -100,9 +100,9 @@ jobs:
     needs: [ jobs_window,jobs_macos ]
     name: 发布版本
     runs-on: ubuntu-latest
-    env:
-      version: ${{ needs.jobs_v.outputs.version }}
-      body: ${{ needs.jobs_v.outputs.body }}
+    # env:
+    #   version: ${{ needs.jobs_v.outputs.version }}
+    #   body: ${{ needs.jobs_v.outputs.body }}
     steps:
       - name: 下载产物
         id: download
