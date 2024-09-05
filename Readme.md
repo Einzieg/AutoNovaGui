@@ -20,4 +20,5 @@ pyinstaller main.spec
 - [x]  TODO 无感操作（纯后台执行）
 - [ ]  TODO 自定义运行时间
 - [ ]  TODO 攻击前检测舰队是否战斗中
-- [ ]  TODO 设置是否抢登\抢登等待时间
+- [x]  TODO 设置是否抢登\抢登等待时间
+
