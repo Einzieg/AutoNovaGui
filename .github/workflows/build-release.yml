@@ -11,26 +11,7 @@ permissions:
   actions: write
 
 jobs:
-  jobs_version:
-    name: 构建版本号和变更信息
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.create_version.outputs.tag_name }}
-      body: ${{ steps.create_version.outputs.body }}
-    steps:
-      - uses: release-drafter/release-drafter@v5
-        id: create_version
-        with:
-          config-name: release-drafter.yml
-          disable-autolabeler: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 查看变量
-        run: |
-          echo "version=${{ steps.create_version.outputs.tag_name }}"
-
   jobs_windows:
-    needs: jobs_version
     name: 构建EXE
     runs-on: windows-2022
     env:
@@ -59,13 +40,13 @@ jobs:
         run: |
           ls ./dist  # 列出生成文件，确保文件存在
       - name: 上传产物
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
           path: ./dist/*.exe  # 确保上传的路径正确
 
-  jobs4:
-    needs: [ jobs_version, jobs_windows ]
+  jobs_release:
+    needs: jobs_windows
     name: 发布版本
     runs-on: ubuntu-latest
     env:
@@ -74,7 +55,7 @@ jobs:
     steps:
       - name: 下载
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: windows-artifact
           path: ./  # 确保下载到根目录
@@ -84,11 +65,11 @@ jobs:
           echo "download path: ${{ steps.download.outputs.download-path }}"
           ls -R  # 列出所有文件，确认下载成功
       - name: 发布文件
-        uses: ncipollo/release-action@v1
+        uses: actions/upload-artifact@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           #prerelease: true  # 预发布 别人可以看到 版本号会继续加
           tag: ${{ env.version }}
           body: ${{ env.body }}
-          artifacts: "windows/*.exe"  # 确保路径指向下载的文件
+          artifacts: "windows-artifact/*.exe"  # 确保路径指向下载的文件
