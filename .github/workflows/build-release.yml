@@ -88,7 +88,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
-          prerelease: true
+          #prerelease: true  # 预发布 别人可以看到 版本号会继续加
           tag: ${{ env.version }}
           body: ${{ env.body }}
-          artifacts: "windows-artifact/*.exe"  # 确保路径指向下载的文件
+          artifacts: "windows/*.exe"  # 确保路径指向下载的文件
