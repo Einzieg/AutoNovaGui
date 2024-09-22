@@ -18,8 +18,10 @@ def resource_path(relative_path):
 
 
 def cv_imread(file_path):
-    cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
-    cv_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+    cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), cv2.IMREAD_COLOR)
+    # cv_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+    plt.imshow(cv_img)
+    plt.show()
     return cv_img
 
 
@@ -28,11 +30,11 @@ icon = cv_imread(resource_path('../static/novaimgs/采集残骸/残骸.png'))
 offset = 3
 
 
-def get_coordinate(img, believe, no_click_zones=[]):
+def get_coordinate(img, believe, no_click_zone=None):
     screenshot = cv2.imread(resource_path("../screenshot.png"), cv2.IMREAD_GRAYSCALE)
     # 遍历需要屏蔽的区域并填充为黑色
-    if no_click_zones is not None:
-        for zone in no_click_zones:
+    if no_click_zone is not None:
+        for zone in no_click_zone:
             left, top, right, bottom = zone
             width = right - left
             height = bottom - top

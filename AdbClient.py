@@ -64,7 +64,7 @@ class AdbClient:
         """
         command = f"pull {remote_path} {local_path}"
         self._run_command(command)
-        logging.debug(f"拉取 {remote_path} 至 {local_path}")
+        logging.debug(f"已拉取 {remote_path} 至 {local_path}")
 
     def push(self, local_path, remote_path):
         """
