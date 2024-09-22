@@ -1,50 +1,48 @@
 name: 发布应用
 
 on:
-  push:
+  push: # 代码推送到main分支自动触发工作流
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
-permissions:
-  contents: write
-  actions: write
+permissions: write-all # 给所有工作写权限
 
 jobs:
   jobs_version:
     name: 构建版本号和变更信息
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.create_version.outputs.tag_name }}
-      body: ${{ steps.create_version.outputs.body }}
+      version: ${{ steps.create_version.outputs.tag_name }} # 版本号
+      body: ${{ steps.create_version.outputs.body }} # 版本变更内容
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         id: create_version
         with:
-          config-name: release-drafter.yml
-          disable-autolabeler: true
+          config-name: release-drafter.yml # 配置文件在 .github/release-drafter.yml
+          disable-autolabeler: true # 禁止自动标签
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 查看变量
         run: |
-          echo "version=${{ steps.create_version.outputs.tag_name }}"
+          echo ${{ format('version={0}', steps.create_version.outputs.tag_name ) }} 
 
   jobs_windows:
     needs: jobs_version
-    name: 构建EXE
+    name: 构建windows软件
     runs-on: windows-2022
     env:
-      version: ${{ needs.jobs_version.outputs.version }}
-      body: ${{ needs.jobs_version.outputs.body }}
+      version: ${{ needs.jobs_v.outputs.version }}
+      body: ${{ needs.jobs_v.outputs.body }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: 读入环境信息
         run: |
-          echo "version=${{ env.version }}"
+          echo ${{ format('version {0}', env.version ) }} # 版本号
       - name: 编译环境设置
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11.2"
           architecture: "x64"
@@ -55,40 +53,38 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pyinstaller main-win.spec
-      - name: 查看dist目录
-        run: |
-          ls ./dist  # 列出生成文件，确保文件存在
       - name: 上传产物
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: windows-artifact
-          path: ./dist/*.exe  # 确保上传的路径正确
+          name: windows
+          path: ./dist/*.exe
 
   jobs4:
-    needs: [ jobs_version, jobs_windows ]
+    needs: [ jobs_version,jobs_windows ]
     name: 发布版本
     runs-on: ubuntu-latest
     env:
-      version: ${{ needs.jobs_version.outputs.version }}
-      body: ${{ needs.jobs_version.outputs.body }}
+      version: ${{ needs.jobs_v.outputs.version }}
+      body: ${{ needs.jobs_v.outputs.body }}
     steps:
-      - name: 下载
+      - name: 下载产物
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: windows-artifact
-          path: ./  # 确保下载到根目录
+          path: ./
       - name: 读入环境信息
         run: |
-          echo "version=${{ env.version }}"
-          echo "download path: ${{ steps.download.outputs.download-path }}"
-          ls -R  # 列出所有文件，确认下载成功
+          echo ${{ format('version {0}', env.version ) }}
+          echo ${{steps.download.outputs.download-path}}
+          ls -R
+
       - name: 发布文件
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          #prerelease: true  # 预发布 别人可以看到 版本号会继续加
-          tag: ${{ env.version }}
-          body: ${{ env.body }}
-          artifacts: "windows/*.exe"  # 确保路径指向下载的文件
+          allowUpdates: true # 覆盖文件
+          # draft: true # 草稿 自己可见 版本号会保持一样 默认是自动发布 latest
+          prerelease: true # 预发布 别人可以看到 版本号会继续加
+          tag: ${{ env.version }} # 版本号 v0.1.0
+          body: ${{ env.body }} # 输出的内容
+          artifacts: "windows/*.exe"
