@@ -12,13 +12,13 @@ permissions:
 
 jobs:
   build_windows:
-    name: 构建
+    name: 构建EXE
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: 获取环境信息
+      - name: 读入环境信息
         run: |
           echo "version=${{ github.ref }}"
       - name: 编译环境设置
@@ -27,18 +27,17 @@ jobs:
           python-version: "3.11.2"
           architecture: "x64"
           cache: 'pip'
-          cache-dependency-path: 'requirements.txt'
       - name: 下载依赖文件
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: 编译
+      - name: 编译exe
         run: |
           pyinstaller main-win.spec
       - name: 查看dist目录
         run: |
           ls ./dist
-      - name: 上传
+      - name: 上传产物
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
@@ -55,7 +54,7 @@ jobs:
         with:
           name: windows-artifact
           path: .
-      - name: 获取环境信息
+      - name: 读入环境信息
         run: |
           echo "version=${{ github.ref }}"
           echo "download path: ${{ steps.download.outputs.download-path }}"
@@ -66,7 +65,9 @@ jobs:
           python-version: "3.11.2"
           architecture: "x64"
           cache: 'pip'
-          cache-dependency-path: 'requirements.txt'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
       - name: 发布文件
         uses: ncipollo/release-action@v1
         with:
