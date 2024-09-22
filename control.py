@@ -32,10 +32,10 @@ normal_monster_templates = [cv_imread('static/novaimgs/清道夫/清道夫_2级.
                             cv_imread('static/novaimgs/清道夫/清道夫_3级.png'),
                             cv_imread('static/novaimgs/清道夫/清道夫_4级.png')]
 # 加载深红怪物模板图像
-red_monster_templates = [cv_imread('static/novaimgs/深红入侵/red_wandering.png'),
-                         cv_imread('static/novaimgs/深红入侵/red_wandering (2).png'),
+red_monster_templates = [cv_imread('static/novaimgs/深红入侵/流浪阵列.png'),
+                         cv_imread('static/novaimgs/深红入侵/流浪阵列(小).png'),
                          cv_imread('static/novaimgs/深红入侵/lv4_red_transport.png'),
-                         cv_imread('static/novaimgs/深红入侵/lv6_red_monster.png')]
+                         cv_imread('static/novaimgs/深红入侵/lv6_节点阵列.png')]
 # 加载残骸图标
 debris_templates = [cv_imread('static/novaimgs/采集残骸/精英清道夫残骸.png'),
                     cv_imread('static/novaimgs/采集残骸/残骸.png')]
@@ -330,6 +330,7 @@ def attack_process():
     try:
         find_monsters()
         attack_monsters()
+        find_repair()
         select_all()
         confirm()
         logging.info("刷怪流程结束<<<")
@@ -358,6 +359,7 @@ def attack_apocalypse_process():
     try:
         find_red_monsters()
         attack_monsters()
+        find_repair()
         select_all()
         confirm()
         logging.info("刷深红流程结束<<<")
@@ -792,7 +794,8 @@ def examine_return():
     try:
         get_screenshot(device)
         if get_coordinate(return_icon, confidence):
-            click(device, 0, 0)
+            click(device, 1, 1)
+            time.sleep(3)
     except TypeError:
         logging.info("未匹配返回图标<<<")
 
@@ -802,10 +805,10 @@ def reset_process():
     logging.info("正在重置视角>>>")
     if if_relogin:
         relogin()
+    examine_return()
     in_shortcut_examine()
     find_close()
     home()
-    examine_return()
     space_station()
     star_system()
     zoom_out(device)
