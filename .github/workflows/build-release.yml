@@ -31,7 +31,7 @@ jobs:
 
   jobs_windows:
     needs: jobs_version
-    name: 构建Windows软件
+    name: 构建EXE
     runs-on: windows-2022
     env:
       version: ${{ needs.jobs_version.outputs.version }}
@@ -55,11 +55,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pyinstaller main-win.spec
+      - name: 查看dist目录
+        run: |
+          ls ./dist  # 列出生成文件，确保文件存在
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
           name: windows-artifact
-          path: ./dist/*.exe
+          path: ./dist/*.exe  # 确保上传的路径正确
 
   jobs4:
     needs: [ jobs_version, jobs_windows ]
@@ -69,7 +72,7 @@ jobs:
       version: ${{ needs.jobs_version.outputs.version }}
       body: ${{ needs.jobs_version.outputs.body }}
     steps:
-      - name: 下载产物
+      - name: 下载
         id: download
         uses: actions/download-artifact@v3
         with:
@@ -79,7 +82,7 @@ jobs:
         run: |
           echo "version=${{ env.version }}"
           echo "download path: ${{ steps.download.outputs.download-path }}"
-          ls -R
+          ls -R  # 列出所有文件，确认下载成功
       - name: 发布文件
         uses: ncipollo/release-action@v1
         with:
@@ -88,4 +91,4 @@ jobs:
           prerelease: true
           tag: ${{ env.version }}
           body: ${{ env.body }}
-          artifacts: "windows/*.exe"
+          artifacts: "windows-artifact/*.exe"  # 确保路径指向下载的文件
