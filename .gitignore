@@ -2,3 +2,5 @@
 /logs/
 /test/
 config.ini
+/_pycache_/
+screenshot.png
