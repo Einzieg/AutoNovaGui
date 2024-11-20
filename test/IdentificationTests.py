@@ -18,20 +18,21 @@ def resource_path(relative_path):
 
 
 def cv_imread(file_path):
-    cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), cv2.IMREAD_COLOR)
+    # cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8),-1)
     # cv_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
-    plt.imshow(cv_img)
-    plt.show()
+    cv_img = cv2.imread(file_path)
+    # plt.imshow(cv_img)
+    # plt.show()
     return cv_img
 
 
-icon = cv_imread(resource_path('../static/novaimgs/采集残骸/残骸.png'))
+icon = cv_imread(resource_path("C:/Users/19363/Pictures/微信图片_20240808094921(1).png"))
 
 offset = 3
 
 
 def get_coordinate(img, believe, no_click_zone=None):
-    screenshot = cv2.imread(resource_path("../screenshot.png"), cv2.IMREAD_GRAYSCALE)
+    screenshot = cv2.imread("C:/Users/19363/Pictures/微信图片_20240808094921.png")
     # 遍历需要屏蔽的区域并填充为黑色
     if no_click_zone is not None:
         for zone in no_click_zone:
@@ -40,21 +41,25 @@ def get_coordinate(img, believe, no_click_zone=None):
             height = bottom - top
             screenshot[top:top + height, left:left + width] = 0
 
-        plt.imshow(screenshot, cmap='gray')
+        plt.imshow(screenshot)
         plt.title('Modified Screenshot')
         plt.show()
 
     result = cv2.matchTemplate(screenshot, img, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    print("匹配置信度:", max_val)
+    print("匹配置信度:", max_val)    # 1.0
     if max_val >= believe:
-        icon_w, icon_h = img.shape[::-1]
+        print(img.shape[:2])  # (3, 53, 66)
+        icon_w, icon_h = img.shape[:2]
 
         top_left = max_loc
         bottom_right = (top_left[0] + icon_w, top_left[1] + icon_h)
-        cv2.rectangle(screenshot, top_left, bottom_right, (139, 0, 0), 15)
-        plt.imshow(screenshot, cmap='gray')
-        plt.show()
+        cv2.rectangle(screenshot, top_left, bottom_right, (255, 0, 0), 2)
+        cv2.imshow('result', screenshot)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        # plt.imshow(screenshot)
+        # plt.show()
 
         icon_center_x = max_loc[0] + icon_w // 2
         icon_center_y = max_loc[1] + icon_h // 2

@@ -17,8 +17,8 @@ def cv_imread(relative_path):
         base_path = os.path.abspath(".")
 
     file_path = os.path.join(base_path, relative_path)
-    cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
-    cv_img = cv2.cvtColor(cv_img, cv2.COLOR_RGB2GRAY)
+    # cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
+    cv_img = cv2.imread(file_path)
     return cv_img
 
 
@@ -196,7 +196,7 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
 
 # 根据图片返回屏幕坐标
 def get_coordinate(img, believe, forbidden_zones=None):
-    screenshot = cv2.imread('screenshot.png', cv2.IMREAD_GRAYSCALE)
+    screenshot = cv2.imread('screenshot.png')
 
     if forbidden_zones is not None:
         for zone in no_click_zones:
@@ -213,7 +213,10 @@ def get_coordinate(img, believe, forbidden_zones=None):
         # ===============
         # top_left = max_loc
         # bottom_right = (top_left[0] + icon_w, top_left[1] + icon_h)
-        # cv2.rectangle(screenshot, top_left, bottom_right, (139, 0, 0), 15)
+        # cv2.rectangle(screenshot, top_left, bottom_right, (0, 0, 255), 10)
+        # cv2.imshow('result', img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
         # plt.imshow(screenshot, cmap='gray')
         # plt.show()
         # ===============
