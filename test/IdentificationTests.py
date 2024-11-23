@@ -26,13 +26,14 @@ def cv_imread(file_path):
     return cv_img
 
 
-icon = cv_imread(resource_path("C:/Users/19363/Pictures/微信图片_20240808094921(1).png"))
+icon = cv2.imread("../static/novaimgs/attack/confirm_attack.png")
 
 offset = 3
 
 
 def get_coordinate(img, believe, no_click_zone=None):
-    screenshot = cv2.imread("C:/Users/19363/Pictures/微信图片_20240808094921.png")
+    screenshot = cv2.imread("../screenshot.png")
+
     # 遍历需要屏蔽的区域并填充为黑色
     if no_click_zone is not None:
         for zone in no_click_zone:
@@ -47,26 +48,28 @@ def get_coordinate(img, believe, no_click_zone=None):
 
     result = cv2.matchTemplate(screenshot, img, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    print("匹配置信度:", max_val)    # 1.0
+    print("匹配置信度:", max_val)  # 1.0
     if max_val >= believe:
-        print(img.shape[:2])  # (3, 53, 66)
-        icon_w, icon_h = img.shape[:2]
+        print(f"模板尺寸: {img.shape[:2]}")  # (height, width)
+        icon_w, icon_h = img.shape[1], img.shape[0]
 
         top_left = max_loc
         bottom_right = (top_left[0] + icon_w, top_left[1] + icon_h)
-        cv2.rectangle(screenshot, top_left, bottom_right, (255, 0, 0), 2)
+        cv2.rectangle(screenshot, top_left, bottom_right, (0, 0, 255), 2)
         cv2.imshow('result', screenshot)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-        # plt.imshow(screenshot)
-        # plt.show()
+        plt.imshow(screenshot)
+        plt.show()
 
+        # 计算模板图像的中心坐标
         icon_center_x = max_loc[0] + icon_w // 2
         icon_center_y = max_loc[1] + icon_h // 2
-        random_offset_x = random.randint(-offset, offset)
-        random_offset_y = random.randint(-offset, offset)
-        screen_x = icon_center_x + random_offset_x
-        screen_y = icon_center_y + random_offset_y
+
+        # 去掉不必要的随机偏移，直接返回坐标
+        screen_x = max(0, min(icon_center_x, screenshot.shape[1] - 1))
+        screen_y = max(0, min(icon_center_y, screenshot.shape[0] - 1))
+
         print(f"匹配成功，坐标 [{screen_x}, {screen_y}]")
         return screen_x, screen_y
     print("匹配失败")
@@ -76,7 +79,7 @@ def get_coordinate(img, believe, no_click_zone=None):
 no_click_zones = [
     (0, 0, 500, 260),  # 左上角人物
     (490, 0, 680, 140),  # 3D
-    (946, 524, 974, 552),  # 中央
+    # (946, 524, 974, 552),  # 中央
     (800, 0, 1920, 100),  # 上方资源栏
     (1300, 100, 1920, 270),  # 右上角活动*2
     # (910, 0, 1920, 250),  # 右上角活动*5
@@ -88,4 +91,4 @@ no_click_zones = [
 
 x, y = get_coordinate(icon, 0.75)
 # pyautogui.click(x, y)
-print(x, y)
+print(x, y) # 匹配成功，坐标 [1372, 1110]

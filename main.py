@@ -58,6 +58,7 @@ class GuiApp:
         self.start_button = self.__tk_button_start_btn(self.root)
         self.stop_button = self.__tk_button_stop_btn(self.root)
         self.stop_button.place_forget()  # 隐藏停止按钮
+        self.__tk_button_toggle_log()
 
         self.log_text = self.__tk_text_window_log(self.root)
         self.config_frame = self.__tk_label_frame_lxq1wys2(self.root)
@@ -104,6 +105,19 @@ class GuiApp:
         self.__tk_check_button_if_hidden_gec(self.run_options_frame).config(variable=self.if_hidden_gec)
         self.__tk_check_button_if_orders(self.run_options_frame).config(variable=self.if_order)
         self.__tk_check_button_if_relogin(self.run_options_frame).config(variable=self.if_relogin)
+
+    def toggle_log(self):
+        if self.log_text.winfo_ismapped():
+            self.log_text.place_forget()
+            self.root.geometry("850x400")
+
+        else:
+            self.log_text.place(x=10, y=400, width=830, height=390)
+            self.root.geometry("850x800")
+
+    def __tk_button_toggle_log(self):
+        btn = Button(self.root, text="显示/隐藏日志框", bootstyle="success-outline-toolbutton", command=self.toggle_log)
+        btn.place(x=50, y=350, width=200, height=30)
 
     def __tk_button_start_btn(self, parent):
         # noinspection PyArgumentList
@@ -362,7 +376,7 @@ class GuiApp:
                        game_if_orders=self.if_order.get(),
                        game_if_relogin=self.if_relogin.get(),
                        )
-            time.sleep(6)
+            time.sleep(3)
             while self.running:
                 main_loop()
                 time.sleep(3)
@@ -377,7 +391,7 @@ class GuiApp:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     root = Window(themename='darkly')
     app = GuiApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口

@@ -5,7 +5,6 @@ import sys
 import time
 
 import cv2
-import numpy as np
 
 from Adbutils import adb_connect, get_screenshot, zoom_out, click, send_scripts
 
@@ -15,98 +14,103 @@ def cv_imread(relative_path):
         base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     except AttributeError:
         base_path = os.path.abspath(".")
-
     file_path = os.path.join(base_path, relative_path)
-    # cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), -1)
-    cv_img = cv2.imread(file_path)
-    return cv_img
+    return cv2.imread(file_path.__str__())
 
 
 # 加载怪物模板图像
-monster_templates = [cv_imread('static/novaimgs/清道夫/首领清道夫_5级.png'),
-                     cv_imread('static/novaimgs/清道夫/首领清道夫_4级.png'),
-                     cv_imread('static/novaimgs/清道夫/精英清道夫_6级.png'),
-                     cv_imread('static/novaimgs/清道夫/精英清道夫_5级.png')]
+monster_templates = [cv_imread('static/novaimgs/monsters/leader_lv6.png'),
+                     cv_imread('static/novaimgs/monsters/leader_lv5.png'),
+                     cv_imread('static/novaimgs/monsters/elite_lv6.png'),
+                     cv_imread('static/novaimgs/monsters/elite_lv5.png')
+                     ]
 # 加载普通怪物模板图像
-normal_monster_templates = [cv_imread('static/novaimgs/清道夫/清道夫_2级.png'),
-                            cv_imread('static/novaimgs/清道夫/清道夫_3级.png'),
-                            cv_imread('static/novaimgs/清道夫/清道夫_4级.png')]
+normal_monster_templates = [cv_imread('static/novaimgs/monsters/normal_lv2.png'),
+                            cv_imread('static/novaimgs/monsters/normal_lv3.png'),
+                            cv_imread('static/novaimgs/monsters/normal_lv4.png')]
 # 加载深红怪物模板图像
-red_monster_templates = [cv_imread('static/novaimgs/深红入侵/流浪阵列.png'),
-                         cv_imread('static/novaimgs/深红入侵/流浪阵列(小).png'),
-                         cv_imread('static/novaimgs/深红入侵/lv4_red_transport.png'),
-                         cv_imread('static/novaimgs/深红入侵/lv6_节点阵列.png')]
+red_monster_templates = [cv_imread('static/novaimgs/red_invade/wandering.png'),
+                         cv_imread('static/novaimgs/red_invade/wandering_s.png'),
+                         cv_imread('static/novaimgs/red_invade/lv4_red_transport.png'),
+                         cv_imread('static/novaimgs/red_invade/lv6_node.png')]
 # 加载残骸图标
-debris_templates = [cv_imread('static/novaimgs/采集残骸/精英清道夫残骸.png'),
-                    cv_imread('static/novaimgs/采集残骸/残骸.png')]
+debris_templates = [cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
+                    cv_imread('static/novaimgs/acquisition/alloy_wreckage.png'),
+                    cv_imread('static/novaimgs/acquisition/crystal_wreckage.png')]
 # 加载采集图标
-collect_icon = cv_imread('static/novaimgs/按键/采集.png')
+collect_icon = cv_imread('static/novaimgs/button/button_acquisition.png')
 # 加载攻击图标
-attack_icon = cv_imread('static/novaimgs/攻击/攻击.png')
+attack_icon = cv_imread('static/novaimgs/attack/attack.png')
 # 加载选择全部图标
-select_all_icon = cv_imread('static/novaimgs/攻击/选择全部.png')
+select_all_icon = cv_imread('static/novaimgs/attack/select_all.png')
 # 加载确定图标
-confirm_icon = cv_imread('static/novaimgs/攻击/确定按钮.png')
+confirm_icon = cv_imread('static/novaimgs/attack/confirm_attack.png')
 # 加载空间站图标
-space_station_icon = cv_imread('static/novaimgs/按键/前往空间站.png')
+space_station_icon = cv_imread('static/novaimgs/button/to_station.png')
 # 加载星系图标
-star_system_icon = cv_imread('static/novaimgs/按键/前往星系.png')
+star_system_icon = cv_imread('static/novaimgs/button/to_galaxy.png')
 # 加载关闭图标
-close_icon = [cv_imread('static/novaimgs/按键/button_close.png'),
-              cv_imread('static/novaimgs/按键/button_close2.png'),
-              cv_imread('static/novaimgs/按键/button_close3.png')]
+close_icon = [cv_imread('static/novaimgs/button/button_close.png'),
+              cv_imread('static/novaimgs/button/button_close2.png'),
+              cv_imread('static/novaimgs/button/button_close3.png')]
 # 加载主页图标
-home_icon = cv_imread('static/novaimgs/按键/返回主页.png')
+home_icon = cv_imread('static/novaimgs/button/to_home.png')
 # 加载返回图标
-return_icon = cv_imread('static/novaimgs/按键/召回.png')
+return_icon = cv_imread('static/novaimgs/button/recall.png')
 # 加载坐标管理图标
-coordinate_icon = cv_imread('static/novaimgs/按键/button_coordinate.png')
+coordinate_icon = cv_imread('static/novaimgs/button/button_coordinate.png')
 # 加载雷达图标
-radar_icon = cv_imread('static/novaimgs/隐秘/雷达.png')
+radar_icon = cv_imread('static/novaimgs/hidden/radar.png')
 # 加载搜索图标
-search_icon = cv_imread('static/novaimgs/隐秘/搜索.png')
+search_icon = cv_imread('static/novaimgs/hidden/search.png')
 # 加载维修图标
-repair_icon = cv_imread('static/novaimgs/按键/快速维修.png')
+repair_icon = cv_imread('static/novaimgs/button/repair.png')
 # 加载使用图标
-button_use_props = cv_imread('static/novaimgs/隐秘/使用道具.png')
+button_use_props = cv_imread('static/novaimgs/hidden/button_use_prop.png')
 # 加载max图标
-button_max = cv_imread('static/novaimgs/隐秘/MAX.png')
+button_max = cv_imread('static/novaimgs/hidden/MAX.png')
 # 加载使用能量图标
-button_use_energy = cv_imread('static/novaimgs/隐秘/能量棒.png')
+button_use_energy = cv_imread('static/novaimgs/hidden/energy.png')
 # 加载购买图标
-button_buy = cv_imread('static/novaimgs/隐秘/购买.png')
+button_buy = cv_imread('static/novaimgs/hidden/button_buy.png')
 # 加载使用GEC购买能量图标
-button_use_gec_buy_energy = cv_imread('static/novaimgs/隐秘/GEC购买能量棒.png')
+button_use_gec_buy_energy = cv_imread('static/novaimgs/hidden/GEC.png')
 # 加载确认重登按钮
-button_relogin = cv_imread('static/novaimgs/按键/button_confirm_relogin.png')
+button_relogin = cv_imread('static/novaimgs/button/button_confirm_relogin.png')
 # 加载快捷菜单识别图标
-in_shortcut = cv_imread('static/novaimgs/识别处于/in_shortcut.png')
+in_shortcut = cv_imread('static/novaimgs/identify_in/in_menu.png')
+# 识别选择舰队界面
+in_select_fleet = cv_imread('static/novaimgs/identify_in/in_fleet.png')
+# 加载处于星云界面
+in_galaxy = cv_imread('static/novaimgs/identify_in/in_xingyun.png')
 # 加载系统菜单
-button_system = cv_imread('static/novaimgs/按键/系统按钮.png')
+button_system = cv_imread('static/novaimgs/button/button_system.png')
 # 加载天赋图标
-button_talent = cv_imread('static/novaimgs/天赋/天赋.png')
+button_talent = cv_imread('static/novaimgs/talent/to_talent.png')
 # 加载切换天赋图标
-button_change_talent = cv_imread('static/novaimgs/天赋/更改订单天赋.png')
+button_change_talent = cv_imread('static/novaimgs/talent/special_talent.png')
 # 加载天赋-获得RC增加
-button_talent_increase_rc = cv_imread('static/novaimgs/天赋/天赋_获得RC增加.png')
+button_talent_increase_rc = cv_imread('static/novaimgs/talent/increase_rc.png')
 # 加载天赋-订单数量增加
-button_talent_increase_orders = cv_imread('static/novaimgs/天赋/天赋_订单数量增加.png')
+button_talent_increase_orders = cv_imread('static/novaimgs/talent/increase_orders.png')
 # 加载确认更改天赋图标
-button_confirm_change_talent = cv_imread('static/novaimgs/天赋/更换天赋确认按钮.png')
+button_confirm_change_talent = cv_imread('static/novaimgs/talent/confirm_replacement_talent.png')
 # 加载订单图标
-button_orders = cv_imread('static/novaimgs/订单/订单.png')
+button_orders = cv_imread('static/novaimgs/order/to_order.png')
 # 加载一键交付
-button_deliver_all = cv_imread('static/novaimgs/订单/一键交付3.png')
+button_deliver_all = cv_imread('static/novaimgs/order/delivery.png')
 # 加载确认交付
-button_confirm_deliver = cv_imread('static/novaimgs/订单/确认一键交付.png')
+button_confirm_deliver = cv_imread('static/novaimgs/order/confirm_delivery.png')
 # 加载离港图标
-button_depart = cv_imread('static/novaimgs/订单/离港.png')
+button_depart = cv_imread('static/novaimgs/order/departures.png')
 # 加载关闭订单图标
-button_close_orders = cv_imread('static/novaimgs/订单/关闭订单.png')
+button_close_orders = cv_imread('static/novaimgs/order/close_order.png')
 # 加载更多订单
-button_more_orders = cv_imread('static/novaimgs/订单/更多订单.png')
+button_more_orders = cv_imread('static/novaimgs/order/more_order.png')
 # 加载快进下一批
-button_next_orders = cv_imread('static/novaimgs/订单/快进下一批.png')
+button_next_orders = cv_imread('static/novaimgs/order/fast_forward.png')
+# 检查抢登
+in_relogin_icon = cv_imread('static/novaimgs/identify_in/in_relogin.png')
 
 # 禁止点击区
 no_click_zones = [
@@ -209,7 +213,7 @@ def get_coordinate(img, believe, forbidden_zones=None):
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
     logging.info(f"匹配置信度：{max_val:.2%}")
     if max_val >= believe:
-        icon_w, icon_h = img.shape[::-1]
+        icon_w, icon_h = img.shape[1], img.shape[0]
         # ===============
         # top_left = max_loc
         # bottom_right = (top_left[0] + icon_w, top_left[1] + icon_h)
@@ -407,7 +411,6 @@ def debris_process():
         try:
             find_debris()
             collect()
-            logging.info("采集残骸<<<")
             time.sleep(60)
         except TypeError:
             logging.info("未匹配<<<")
@@ -510,7 +513,7 @@ def find_use_gec_buy_energy():
 # 刷隐秘流程
 def hide_process():
     logging.info("开始刷隐秘流程>>>")
-    relogin()
+    relogin_check()
     find_close()
     home()
     find_radar()
@@ -532,7 +535,7 @@ def hide_process():
         return
 
 
-# 订单 ------------------------------------------------------------------------
+# order ------------------------------------------------------------------------
 
 def open_system():
     logging.info("正在匹配系统图标>>>")
@@ -547,7 +550,6 @@ def open_system():
 
 def open_talent():
     logging.info("正在匹配天赋图标>>>")
-
     try:
         get_screenshot(device)
         x, y = get_coordinate(button_talent, confidence)
@@ -692,7 +694,7 @@ def next_order():
         logging.info("未匹配下一批图标<<<")
 
 
-# 订单
+# order
 def orders_process():
     relogin()
     find_close()
@@ -770,11 +772,12 @@ def home():
 
 def relogin():
     try:
+        logging.info(f"{relogin_time} 秒后重新登录...")
+        time.sleep(relogin_time)
         get_screenshot(device)
         coordinates = get_coordinate(button_relogin, confidence)
-        if coordinates is not None:
+        if coordinates:
             x, y = coordinates
-            time.sleep(relogin_time)
             click(device, x, y)
             time.sleep(10)
     except TypeError:
@@ -785,7 +788,29 @@ def in_shortcut_examine():
     try:
         get_screenshot(device)
         if get_coordinate(in_shortcut, confidence) is not None:
-            click(device, 0, 0)
+            click(device, 1, 1)
+            time.sleep(3)
+    except TypeError:
+        return
+
+
+# 选择舰队检查
+def in_select_fleet_fun():
+    try:
+        get_screenshot(device)
+        if get_coordinate(in_select_fleet, confidence) is not None:
+            click(device, 1, 1)
+            time.sleep(3)
+    except TypeError:
+        return
+
+
+# 星云界面检查
+def in_galaxy_fun():
+    try:
+        get_screenshot(device)
+        if get_coordinate(in_galaxy, confidence) is not None:
+            click(device, 1, 1)
             time.sleep(3)
     except TypeError:
         return
@@ -803,13 +828,25 @@ def examine_return():
         logging.info("未匹配返回图标<<<")
 
 
+# 抢登检查
+def relogin_check():
+    logging.info("正在检查是否被抢登>>>")
+    if get_coordinate(in_relogin_icon, confidence):
+        if if_relogin:
+            logging.info("被抢登,正在重新登录")
+            relogin()
+        else:
+            raise RuntimeError("被抢登,执行结束")
+
+
 # 重置视角流程
 def reset_process():
     logging.info("正在重置视角>>>")
-    if if_relogin:
-        relogin()
+    relogin_check()
     examine_return()
     in_shortcut_examine()
+    in_select_fleet_fun()
+    in_galaxy_fun()
     find_close()
     home()
     space_station()

@@ -21,4 +21,6 @@ pyinstaller main.spec
 - [ ]  TODO 自定义运行时间
 - [ ]  TODO 攻击前检测舰队是否战斗中
 - [x]  TODO 设置是否抢登\抢登等待时间
-
+- [ ]  TODO 工程车回收
+- [ ]  TODO Debug按钮
+- [ ]  TODO 主题切换

@@ -58,10 +58,9 @@ def send_scripts(device):
     device.push(resource_path("static/zoom_in.sh"), "/sdcard/zoom_in.sh")
     device.push(resource_path("static/zoom_out.sh"), "/sdcard/zoom_out.sh")
 
-
 # devic = adb_connect(0)
 # get_screenshot(devic)
-# click(devic, 0, 0)
+# click(devic, 761, 644)
 # send_scripts(devic)
 # zoom_out(devic)
 # devic.disconnect()
