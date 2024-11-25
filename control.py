@@ -696,7 +696,7 @@ def next_order():
 
 # order
 def orders_process():
-    relogin()
+    relogin_check()
     find_close()
     home()
     change_talent_process(True)
@@ -831,6 +831,7 @@ def examine_return():
 # 抢登检查
 def relogin_check():
     logging.info("正在检查是否被抢登>>>")
+    get_screenshot(device)
     if get_coordinate(in_relogin_icon, confidence):
         if if_relogin:
             logging.info("被抢登,正在重新登录")
