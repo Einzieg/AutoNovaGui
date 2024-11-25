@@ -18,7 +18,7 @@ jobs:
       version: ${{ steps.create_version.outputs.tag_name }}
       body: ${{ steps.create_version.outputs.body }}
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         id: create_version
         with:
           config-name: release-drafter.yml
@@ -37,14 +37,14 @@ jobs:
       version: ${{ needs.jobs_version.outputs.version }}
       body: ${{ needs.jobs_version.outputs.body }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: 读入环境信息
         run: |
           echo "version=${{ env.version }}"
       - name: 编译环境设置
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11.2"
           architecture: "x64"
@@ -58,8 +58,8 @@ jobs:
       - name: 查看dist目录
         run: |
           ls ./dist  # 列出生成文件，确保文件存在
-      - name: 上传产物
-        uses: actions/upload-artifact@v3
+      - name: 上传应用
+        uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
           path: ./dist/*.exe  # 确保上传的路径正确
@@ -74,7 +74,7 @@ jobs:
     steps:
       - name: 下载
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: windows-artifact
           path: ./  # 确保下载到根目录
@@ -91,4 +91,4 @@ jobs:
           #prerelease: true  # 预发布 别人可以看到 版本号会继续加
           tag: ${{ env.version }}
           body: ${{ env.body }}
-          artifacts: "windows/*.exe"  # 确保路径指向下载的文件
+          artifacts: "./*.exe"  # 确保路径指向下载的文件
