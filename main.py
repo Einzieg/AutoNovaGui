@@ -40,7 +40,7 @@ def resource_path(relative_path):
 class GuiApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("AutoNovaGui")
+        self.root.title("NovaAH")
         self.root.iconbitmap(resource_path("static/ico/auto.ico"))
         self.root.geometry("850x800")
         self.root.resizable(False, False)

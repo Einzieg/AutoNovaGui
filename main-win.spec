@@ -4,7 +4,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('static', 'static')],
+    datas=[('static', 'static'),('screenshot.png', '.')],
     hiddenimports=['cv2'],
     hookspath=[],
     hooksconfig={},
