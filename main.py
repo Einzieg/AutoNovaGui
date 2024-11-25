@@ -391,7 +391,7 @@ class GuiApp:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     root = Window(themename='darkly')
     app = GuiApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口
