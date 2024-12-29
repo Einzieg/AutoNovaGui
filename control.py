@@ -111,6 +111,8 @@ button_more_orders = cv_imread('static/novaimgs/order/more_order.png')
 button_next_orders = cv_imread('static/novaimgs/order/fast_forward.png')
 # 检查抢登
 in_relogin_icon = cv_imread('static/novaimgs/identify_in/in_relogin.png')
+# 战斗检查
+in_battle = cv_imread('static/novaimgs/identify_in/in_battle.png')
 
 # 禁止点击区
 no_click_zones = [
@@ -118,8 +120,8 @@ no_click_zones = [
     (490, 0, 680, 140),  # 3D
     (946, 524, 974, 552),  # 中央
     (800, 0, 1920, 100),  # 上方资源栏
-    # (1300, 100, 1920, 270),  # 右上角活动*2
-    (910, 0, 1920, 250),  # 右上角活动*5
+    (1300, 100, 1920, 270),  # 右上角活动*2
+    # (910, 0, 1920, 250),  # 右上角活动*5
     (0, 950, 1920, 1080),  # 下方聊天栏
     (1600, 888, 1920, 1080),  # 星系按钮
     (5, 0, 5, 1080),  # 左侧屏幕边缘
@@ -341,8 +343,25 @@ def attack_process():
         select_all()
         confirm()
         logging.info("刷怪流程结束<<<")
-        time.sleep(120)
-        attack_process()
+
+        to_battle = True
+        fighting = False
+        check_time = 0
+
+        while to_battle and check_time < 120:
+            time.sleep(1)
+            check_time += 1
+            if in_battle_check():
+                to_battle = False
+                fighting = True
+
+        while fighting:
+            time.sleep(1)
+            if not in_battle_check():
+                fighting = False
+                attack_process()
+        # time.sleep(120)
+
     except TypeError:
         logging.info("未匹配,流程结束<<<")
 
@@ -370,7 +389,29 @@ def attack_apocalypse_process():
         select_all()
         confirm()
         logging.info("刷深红流程结束<<<")
-        time.sleep(90)
+
+        to_battle = True
+        fighting = False
+        check_time = 0
+
+        while to_battle and check_time < 120:
+            logging.debug("检查是否进入战斗")
+            time.sleep(1)
+            check_time += 1
+            if in_battle_check():
+                logging.info("进入战斗")
+                to_battle = False
+                fighting = True
+
+        while fighting:
+            logging.debug("检查战斗是否结束")
+            time.sleep(1)
+            if not in_battle_check():
+                logging.info("战斗结束")
+                fighting = False
+                attack_apocalypse_process()
+
+        # time.sleep(90)
 
         attack_apocalypse_process()
     except TypeError:
@@ -803,6 +844,16 @@ def in_select_fleet_fun():
             time.sleep(3)
     except TypeError:
         return
+
+
+# 战斗检查
+def in_battle_check():
+    try:
+        get_screenshot(device)
+        if get_coordinate(in_battle, confidence) is not None:
+            return True
+    except TypeError:
+        return False
 
 
 # 星云界面检查

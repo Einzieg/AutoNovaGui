@@ -263,7 +263,7 @@ class GuiApp:
 
         log_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
         root_logger = logging.getLogger()
-        # root_logger.setLevel(logging.DEBUG)
+        root_logger.setLevel(root_logger.level)
 
         log_file_handler = logging.FileHandler(filename=os.path.join(log_dir, f"AutoNova_{datetime.now().strftime('%Y-%m-%d')}.log"), mode='a', encoding='utf-8')
         log_file_handler.setFormatter(log_formatter)
