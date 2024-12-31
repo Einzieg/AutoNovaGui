@@ -52,6 +52,10 @@ def click(device, x, y):
     device.shell("input tap {} {}".format(x, y))
 
 
+def back(device):
+    device.shell("input keyevent 4")
+
+
 # 把缩小和放大的脚本放到模拟器上
 def send_scripts(device):
     logging.debug("send scripts")

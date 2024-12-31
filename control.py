@@ -6,7 +6,7 @@ import time
 
 import cv2
 
-from Adbutils import adb_connect, get_screenshot, zoom_out, click, send_scripts
+from Adbutils import adb_connect, get_screenshot, zoom_out, click, back, send_scripts
 
 
 def cv_imread(relative_path):
@@ -213,7 +213,7 @@ def get_coordinate(img, believe, forbidden_zones=None):
 
     result = cv2.matchTemplate(screenshot, img, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    logging.info(f"匹配置信度：{max_val:.2%}")
+    logging.debug(f"匹配置信度：{max_val:.2%}")
     if max_val >= believe:
         icon_w, icon_h = img.shape[1], img.shape[0]
         # ===============
@@ -273,7 +273,6 @@ def find_normal_monster_coordinates(believe):
 
 # 依次匹配深红怪模板
 def find_red_monster_coordinates(believe):
-    logging.info("正在寻找深红怪>>>")
     get_screenshot(device)
     for template in red_monster_templates:
         coords = get_coordinate(template, believe, no_click_zones)
@@ -829,7 +828,7 @@ def in_shortcut_examine():
     try:
         get_screenshot(device)
         if get_coordinate(in_shortcut, confidence) is not None:
-            click(device, 1, 1)
+            back(device)
             time.sleep(3)
     except TypeError:
         return
@@ -840,7 +839,7 @@ def in_select_fleet_fun():
     try:
         get_screenshot(device)
         if get_coordinate(in_select_fleet, confidence) is not None:
-            click(device, 1, 1)
+            back(device)
             time.sleep(3)
     except TypeError:
         return
@@ -861,7 +860,7 @@ def in_galaxy_fun():
     try:
         get_screenshot(device)
         if get_coordinate(in_galaxy, confidence) is not None:
-            click(device, 1, 1)
+            back(device)
             time.sleep(3)
     except TypeError:
         return
@@ -873,7 +872,7 @@ def examine_return():
     try:
         get_screenshot(device)
         if get_coordinate(return_icon, confidence):
-            click(device, 1, 1)
+            back(device)
             time.sleep(3)
     except TypeError:
         logging.info("未匹配返回图标<<<")
