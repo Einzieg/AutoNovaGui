@@ -23,7 +23,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='NovaAH-3.4.3',
+    name='NovaAH-3.4.4',
     icon='static/ico/auto.ico',
     debug=False,
     bootloader_ignore_signals=False,

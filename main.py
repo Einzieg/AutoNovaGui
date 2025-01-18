@@ -77,14 +77,14 @@ class GuiApp:
         self.__tk_label_setting_monster_confidence(self.config_frame)
         self.__tk_label_setting_corpse_confidence(self.config_frame)
         self.__tk_label_setting_offset(self.config_frame)
-        self.__tk_label_hidden_interval(self.config_frame)
+        # self.__tk_label_hidden_interval(self.config_frame)
         self.__tk_label_setting_relogin_time(self.config_frame)
         self.__tk_input_get_setting_virtual_num(self.config_frame).config(textvariable=self.virtual_num)
         self.__tk_input_get_setting_confidence(self.config_frame).config(textvariable=self.confidence)
         self.__tk_input_get_setting_monster_confidence(self.config_frame).config(textvariable=self.monster_confidence)
         self.__tk_input_get_setting_corpse_confidence(self.config_frame).config(textvariable=self.corpse_confidence)
         self.__tk_input_get_setting_offset(self.config_frame).config(textvariable=self.offset)
-        self.__tk_label_get_setting_hidden_interval(self.config_frame).config(textvariable=self.hidden_interval)
+        # self.__tk_label_get_setting_hidden_interval(self.config_frame).config(textvariable=self.hidden_interval)
         self.__tk_input_get_setting_relogin_time(self.config_frame).config(textvariable=self.relogin_time)
 
         self.run_options_frame = self.__tk_label_frame_run_choose(self.root)
@@ -173,7 +173,7 @@ class GuiApp:
 
     def __tk_label_setting_relogin_time(self, parent):
         label = Label(parent, text="重登等待时长", anchor="center")
-        label.place(x=2, y=230, width=100, height=35)
+        label.place(x=2, y=192, width=100, height=35)
         return label
 
     def __tk_input_get_setting_virtual_num(self, parent):
@@ -208,7 +208,7 @@ class GuiApp:
 
     def __tk_input_get_setting_relogin_time(self, parent):
         ipt = Entry(parent)
-        ipt.place(x=110, y=230, width=180, height=35)
+        ipt.place(x=110, y=192, width=180, height=35)
         return ipt
 
     def __tk_label_frame_run_choose(self, parent):
@@ -365,7 +365,6 @@ class GuiApp:
                        game_confidence=self.confidence.get(),
                        game_monster_confidence=self.monster_confidence.get(),
                        game_corpse_confidence=self.corpse_confidence.get(),
-                       game_hidden_interval=self.hidden_interval.get(),
                        game_relogin_time=self.relogin_time.get(),
                        game_if_elite_monster=self.if_elite_monsters.get(),
                        game_if_normal_monster=self.if_normal_monster.get(),

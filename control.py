@@ -146,7 +146,7 @@ hidden_interval = 60
 relogin_time = 60
 
 
-def initialize(game_virtual_num, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence, game_hidden_interval, game_relogin_time,
+def initialize(game_virtual_num, game_offset, game_confidence, game_monster_confidence, game_corpse_confidence, game_relogin_time,
                game_if_elite_monster, game_if_normal_monster, game_if_wreckage, game_if_apocalypse, game_if_hidden, game_if_hidden_gec, game_if_orders, game_if_relogin):
     logging.info("正在初始化...")
 
@@ -163,7 +163,6 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     confidence = game_confidence
     monster_confidence = game_monster_confidence
     corpse_confidence = game_corpse_confidence
-    hidden_interval = game_hidden_interval
     relogin_time = game_relogin_time
 
     if_normal_monster = game_if_normal_monster
@@ -180,7 +179,6 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     logging.info(f"残骸识别置信度：{corpse_confidence:.2%}")
     if if_hidden:
         logging.info("开启刷隐秘,其它功能将被关闭")
-        logging.info(f"隐秘攻击间隔：{hidden_interval}秒")
         if_reset, if_normal_monster, if_elite_monster, if_apocalypse, if_wreckage, if_orders = False, False, False, False, False, False
     if if_orders:
         logging.info("开启刷订单,其它功能将被关闭")
@@ -233,7 +231,7 @@ def get_coordinate(img, believe, forbidden_zones=None):
         random_offset_y = random.randint(-offset, offset)
         screen_x = icon_center_x + random_offset_x
         screen_y = icon_center_y + random_offset_y
-        logging.info(f"匹配成功，坐标 [{screen_x}, {screen_y}]")
+        logging.debug(f"匹配成功，坐标 [{screen_x}, {screen_y}]")
         return screen_x, screen_y
     return None
 
@@ -317,7 +315,7 @@ def select_all():
     get_screenshot(device)
     x, y = get_coordinate(select_all_icon, confidence)
     click(device, x, y)
-    time.sleep(3)
+    time.sleep(1)
 
 
 # 确定
@@ -326,7 +324,7 @@ def confirm():
     get_screenshot(device)
     x, y = get_coordinate(confirm_icon, confidence)
     click(device, x, y)
-    time.sleep(3)
+    time.sleep(1)
 
     # global ATTACKS_NO
     # ATTACKS_NO += 1
@@ -334,33 +332,15 @@ def confirm():
 
 # 刷精英怪流程
 def attack_process():
-    logging.info("开始刷怪流程>>>")
+    logging.info("开始刷精英流程>>>")
     try:
         find_monsters()
         attack_monsters()
         find_repair()
         select_all()
         confirm()
-        logging.info("刷怪流程结束<<<")
-
-        to_battle = True
-        fighting = False
-        check_time = 0
-
-        while to_battle and check_time < 120:
-            time.sleep(1)
-            check_time += 1
-            if in_battle_check():
-                to_battle = False
-                fighting = True
-
-        while fighting:
-            time.sleep(1)
-            if not in_battle_check():
-                fighting = False
-                attack_process()
-        # time.sleep(120)
-
+        combat_checks(attack_process)
+        logging.info("刷精英流程结束<<<")
     except TypeError:
         logging.info("未匹配,流程结束<<<")
 
@@ -373,8 +353,8 @@ def attack_normal_process():
         attack_monsters()
         select_all()
         confirm()
+        combat_checks(attack_normal_process)
         logging.info("刷怪流程结束<<<")
-        time.sleep(120)
     except TypeError:
         logging.info("未匹配,流程结束<<<")
 
@@ -387,32 +367,8 @@ def attack_apocalypse_process():
         find_repair()
         select_all()
         confirm()
+        combat_checks(attack_apocalypse_process)
         logging.info("刷深红流程结束<<<")
-
-        to_battle = True
-        fighting = False
-        check_time = 0
-
-        while to_battle and check_time < 120:
-            logging.debug("检查是否进入战斗")
-            time.sleep(1)
-            check_time += 1
-            if in_battle_check():
-                logging.info("进入战斗")
-                to_battle = False
-                fighting = True
-
-        while fighting:
-            logging.debug("检查战斗是否结束")
-            time.sleep(1)
-            if not in_battle_check():
-                logging.info("战斗结束")
-                fighting = False
-                attack_apocalypse_process()
-
-        # time.sleep(90)
-
-        attack_apocalypse_process()
     except TypeError:
         logging.info("未匹配,流程结束<<<")
 
@@ -466,7 +422,7 @@ def find_radar():
         get_screenshot(device)
         x, y = get_coordinate(radar_icon, confidence)
         click(device, x, y)
-        time.sleep(3)
+        time.sleep(2)
     except TypeError:
         logging.info("未匹配雷达图标<<<")
 
@@ -478,7 +434,7 @@ def find_search():
         get_screenshot(device)
         x, y = get_coordinate(search_icon, confidence)
         click(device, x, y)
-        time.sleep(3)
+        time.sleep(2)
     except TypeError:
         logging.info("未匹配搜索图标<<<")
 
@@ -490,7 +446,7 @@ def find_repair():
         get_screenshot(device)
         x, y = get_coordinate(repair_icon, confidence)
         click(device, x, y)
-        time.sleep(3)
+        time.sleep(1)
     except TypeError:
         logging.info("未匹配维修图标<<<")
 
@@ -502,7 +458,7 @@ def find_use():
         get_screenshot(device)
         x, y = get_coordinate(button_use_props, confidence)
         click(device, x, y)
-        time.sleep(3)
+        time.sleep(1)
         return True
     except TypeError:
         return False
@@ -514,7 +470,7 @@ def find_buy():
         get_screenshot(device)
         x, y = get_coordinate(button_buy, confidence)
         click(device, x, y)
-        time.sleep(3)
+        time.sleep(1)
         return True
     except TypeError:
         return False
@@ -527,7 +483,7 @@ def find_max():
         get_screenshot(device)
         x, y = get_coordinate(button_max, confidence)
         click(device, x, y)
-        time.sleep(3)
+        time.sleep(1)
     except TypeError:
         logging.info("未匹配max图标<<<")
 
@@ -538,7 +494,7 @@ def find_use_props():
     get_screenshot(device)
     x, y = get_coordinate(button_use_energy, confidence)
     click(device, x, y)
-    time.sleep(3)
+    time.sleep(1)
 
 
 # 使用GEC购买能量
@@ -547,7 +503,7 @@ def find_use_gec_buy_energy():
     get_screenshot(device)
     x, y = get_coordinate(button_use_gec_buy_energy, confidence)
     click(device, x, y)
-    time.sleep(3)
+    time.sleep(1)
 
 
 # 刷隐秘流程
@@ -571,6 +527,7 @@ def hide_process():
         find_repair()
         select_all()
         confirm()
+        combat_checks(hide_process)
     except TypeError:
         return
 
@@ -890,6 +847,28 @@ def relogin_check():
             raise RuntimeError("被抢登,执行结束")
 
 
+def combat_checks(callback):
+    logging.info("正在检查战斗状态>>>")
+    to_battle = True
+    fighting = False
+    check_time = 0
+
+    while to_battle and check_time < 120:
+        logging.debug("检查是否进入战斗")
+        check_time += 1
+        if in_battle_check():
+            logging.info("进入战斗")
+            to_battle = False
+            fighting = True
+
+    while fighting:
+        logging.debug("检查战斗是否结束")
+        if not in_battle_check():
+            logging.info("战斗结束")
+            fighting = False
+            callback()
+
+
 # 重置视角流程
 def reset_process():
     logging.info("正在重置视角>>>")
@@ -923,9 +902,5 @@ def main_loop():
         attack_normal_process()
     if if_wreckage:
         debris_process()
-    if if_orders:
-        pass
-    elif if_hidden:
-        time.sleep(hidden_interval)
     else:
         time.sleep(60)
