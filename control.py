@@ -252,8 +252,7 @@ def find_monster_coordinates(believe):
 def find_monsters():
     logging.info("正在寻找精英怪>>>")
     coordinates = find_monster_coordinates(monster_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -284,8 +283,7 @@ def find_red_monster_coordinates(believe):
 def find_normal_monsters():
     logging.info("正在寻找普通怪>>>")
     coordinates = find_normal_monster_coordinates(monster_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -293,8 +291,7 @@ def find_normal_monsters():
 def find_red_monsters():
     logging.info("正在寻找深红怪>>>")
     coordinates = find_red_monster_coordinates(monster_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -304,8 +301,8 @@ def find_red_monsters():
 def attack_monsters():
     logging.info("正在匹配攻击图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(attack_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(attack_icon, confidence)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -313,8 +310,8 @@ def attack_monsters():
 def select_all():
     logging.info("正在匹配选择全部图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(select_all_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(select_all_icon, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
 
@@ -322,8 +319,8 @@ def select_all():
 def confirm():
     logging.info("正在匹配确定图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(confirm_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(confirm_icon, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
     # global ATTACKS_NO
@@ -388,16 +385,15 @@ def find_debris_coordinates(believe):
 def find_debris():
     logging.info("正在寻找残骸>>>")
     coordinates = find_debris_coordinates(corpse_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
 def collect():
     logging.info("正在匹配采集图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(collect_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(collect_icon, confidence)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -420,8 +416,8 @@ def find_radar():
     logging.info("正在匹配雷达图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(radar_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(radar_icon, confidence)
+        click(device, coordinates)
         time.sleep(2)
     except TypeError:
         logging.info("未匹配雷达图标<<<")
@@ -432,8 +428,8 @@ def find_search():
     logging.info("正在匹配搜索图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(search_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(search_icon, confidence)
+        click(device, coordinates)
         time.sleep(2)
     except TypeError:
         logging.info("未匹配搜索图标<<<")
@@ -444,8 +440,8 @@ def find_repair():
     logging.info("正在匹配维修图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(repair_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(repair_icon, confidence)
+        click(device, coordinates)
         time.sleep(1)
     except TypeError:
         logging.info("未匹配维修图标<<<")
@@ -456,8 +452,8 @@ def find_use():
     logging.info("正在匹配使用图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_use_props, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_use_props, confidence)
+        click(device, coordinates)
         time.sleep(1)
         return True
     except TypeError:
@@ -468,8 +464,8 @@ def find_buy():
     logging.info("正在匹配购买图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_buy, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_buy, confidence)
+        click(device, coordinates)
         time.sleep(1)
         return True
     except TypeError:
@@ -481,8 +477,8 @@ def find_max():
     try:
         logging.info("正在匹配max图标>>>")
         get_screenshot(device)
-        x, y = get_coordinate(button_max, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_max, confidence)
+        click(device, coordinates)
         time.sleep(1)
     except TypeError:
         logging.info("未匹配max图标<<<")
@@ -492,8 +488,8 @@ def find_max():
 def find_use_props():
     logging.info("正在匹配使用道具图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(button_use_energy, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(button_use_energy, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
 
@@ -501,8 +497,8 @@ def find_use_props():
 def find_use_gec_buy_energy():
     logging.info("正在匹配购买能量图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(button_use_gec_buy_energy, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(button_use_gec_buy_energy, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
 
@@ -538,8 +534,8 @@ def open_system():
     logging.info("正在匹配系统图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_system, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_system, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配系统图标<<<")
@@ -549,8 +545,8 @@ def open_talent():
     logging.info("正在匹配天赋图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_talent, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_talent, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配天赋图标<<<")
@@ -560,8 +556,8 @@ def change_talent():
     logging.info("正在匹配修改天赋图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_change_talent, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_change_talent, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配修改天赋图标<<<")
@@ -571,8 +567,8 @@ def change_talent_rc():
     logging.info("正在匹配获得RC增加图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_talent_increase_rc, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_talent_increase_rc, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配获得RC增加图标<<<")
@@ -582,8 +578,8 @@ def change_talent_order():
     logging.info("正在匹配订单数量增加图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_talent_increase_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_talent_increase_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配订单数量增加图标<<<")
@@ -593,8 +589,8 @@ def confirm_change_talent():
     logging.info("正在匹配确认修改天赋图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_confirm_change_talent, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_confirm_change_talent, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配确认修改天赋图标<<<")
@@ -618,8 +614,8 @@ def open_orders():
     logging.info("正在匹配订单图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配订单图标<<<")
@@ -629,8 +625,8 @@ def deliver_all():
     logging.info("正在匹配一键交付图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_deliver_all, 0.48)
-        click(device, x, y)
+        coordinates = get_coordinate(button_deliver_all, 0.48)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配一键交付图标<<<")
@@ -640,8 +636,8 @@ def confirm_deliver():
     logging.info("正在匹配确认交付图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_confirm_deliver, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_confirm_deliver, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配确认交付图标<<<")
@@ -651,8 +647,8 @@ def depart():
     logging.info("正在匹配离港图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_depart, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_depart, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配离港图标<<<")
@@ -662,8 +658,8 @@ def close_orders():
     logging.info("正在匹配关闭订单图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_close_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_close_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配关闭订单图标<<<")
@@ -673,8 +669,8 @@ def more_order():
     logging.info("正在匹配更多订单图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_more_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_more_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配更多订单图标<<<")
@@ -684,8 +680,8 @@ def next_order():
     logging.info("正在匹配下一批图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_next_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_next_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配下一批图标<<<")
@@ -719,8 +715,8 @@ def space_station():
     logging.info("正在匹配空间站图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(space_station_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(space_station_icon, confidence)
+        click(device, coordinates)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配空间站图标<<<")
@@ -731,8 +727,8 @@ def star_system():
     logging.info("正在匹配星系图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(star_system_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(star_system_icon, confidence)
+        click(device, coordinates)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配星系图标<<<")
@@ -752,16 +748,15 @@ def find_close():
     logging.info("正在寻找关闭图标>>>")
     coordinates = find_close_icons(confidence)
     if coordinates:
-        x, y = coordinates
-        click(device, x, y)
+        click(device, coordinates)
 
 
 def home():
     logging.info("正在匹配主页图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(home_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(home_icon, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配主页图标<<<")
@@ -774,8 +769,7 @@ def relogin():
         get_screenshot(device)
         coordinates = get_coordinate(button_relogin, confidence)
         if coordinates:
-            x, y = coordinates
-            click(device, x, y)
+            click(device, coordinates)
             time.sleep(10)
     except TypeError:
         return
