@@ -17,7 +17,13 @@ def resource_path(relative_path):
 
 
 def adb_connect(n):
-    device = AdbClient(ip='127.0.0.1', port=16384 + 32 * n)
+    if n < 5555:
+        port = 16384 + 32 * n
+    elif n >= 16384:
+        port = n
+    else:
+        port = 5555
+    device = AdbClient(ip='127.0.0.1', port=port)
     return device
 
 
@@ -48,7 +54,8 @@ def down(device):
     device.shell("input swipe {} {} {} {}".format(1000, 800, 1000, 500))
 
 
-def click(device, x, y):
+def click(device, coordinate):
+    x, y = coordinate
     device.shell("input tap {} {}".format(x, y))
 
 

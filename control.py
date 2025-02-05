@@ -7,6 +7,7 @@ import time
 import cv2
 
 from Adbutils import adb_connect, get_screenshot, zoom_out, click, back, send_scripts
+from utils.MultiTargeting import move_coordinates
 
 
 def cv_imread(relative_path):
@@ -35,6 +36,7 @@ red_monster_templates = [cv_imread('static/novaimgs/red_invade/wandering.png'),
                          cv_imread('static/novaimgs/red_invade/lv6_node.png')]
 # 加载残骸图标
 debris_templates = [cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
+                    cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
                     cv_imread('static/novaimgs/acquisition/alloy_wreckage.png'),
                     cv_imread('static/novaimgs/acquisition/crystal_wreckage.png')]
 # 加载采集图标
@@ -113,18 +115,21 @@ button_next_orders = cv_imread('static/novaimgs/order/fast_forward.png')
 in_relogin_icon = cv_imread('static/novaimgs/identify_in/in_relogin.png')
 # 战斗检查
 in_battle = cv_imread('static/novaimgs/identify_in/in_battle.png')
+# 无可用工程船
+none_available = cv_imread('static/novaimgs/acquisition/none_available.png')
 
 # 禁止点击区
 no_click_zones = [
     (0, 0, 500, 260),  # 左上角人物
-    (490, 0, 680, 140),  # 3D
-    (946, 524, 974, 552),  # 中央
+    (490, 0, 680, 130),  # 3D
+    # (946, 524, 974, 552),  # 中央
     (800, 0, 1920, 100),  # 上方资源栏
-    (1300, 100, 1920, 270),  # 右上角活动*2
+    (1300, 100, 1920, 270),  # 右上角活动*3
     # (910, 0, 1920, 250),  # 右上角活动*5
-    (0, 950, 1920, 1080),  # 下方聊天栏
-    (1600, 888, 1920, 1080),  # 星系按钮
-    (5, 0, 5, 1080),  # 左侧屏幕边缘
+    (1700, 270, 1920, 400),  # 极乐入口
+    (0, 950, 1300, 1080),  # 下方聊天栏
+    (1350, 870, 1920, 1080),  # 星云按钮
+    # (5, 0, 5, 1080),  # 左侧屏幕边缘
     (1680, 250, 1920, 750)  # 右侧活动及快捷菜单
 ]
 
@@ -153,6 +158,7 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     global device
     device = adb_connect(game_virtual_num)
     send_scripts(device)
+    get_screenshot(device)
 
     global if_reset, if_relogin
     global offset, confidence, monster_confidence, corpse_confidence, hidden_interval, relogin_time
@@ -221,8 +227,6 @@ def get_coordinate(img, believe, forbidden_zones=None):
         # cv2.imshow('result', img)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
-        # plt.imshow(screenshot, cmap='gray')
-        # plt.show()
         # ===============
         icon_center_x = max_loc[0] + icon_w // 2
         icon_center_y = max_loc[1] + icon_h // 2
@@ -252,8 +256,7 @@ def find_monster_coordinates(believe):
 def find_monsters():
     logging.info("正在寻找精英怪>>>")
     coordinates = find_monster_coordinates(monster_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -284,8 +287,7 @@ def find_red_monster_coordinates(believe):
 def find_normal_monsters():
     logging.info("正在寻找普通怪>>>")
     coordinates = find_normal_monster_coordinates(monster_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -293,8 +295,7 @@ def find_normal_monsters():
 def find_red_monsters():
     logging.info("正在寻找深红怪>>>")
     coordinates = find_red_monster_coordinates(monster_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -304,8 +305,8 @@ def find_red_monsters():
 def attack_monsters():
     logging.info("正在匹配攻击图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(attack_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(attack_icon, confidence)
+    click(device, coordinates)
     time.sleep(3)
 
 
@@ -313,8 +314,8 @@ def attack_monsters():
 def select_all():
     logging.info("正在匹配选择全部图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(select_all_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(select_all_icon, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
 
@@ -322,8 +323,8 @@ def select_all():
 def confirm():
     logging.info("正在匹配确定图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(confirm_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(confirm_icon, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
     # global ATTACKS_NO
@@ -388,28 +389,60 @@ def find_debris_coordinates(believe):
 def find_debris():
     logging.info("正在寻找残骸>>>")
     coordinates = find_debris_coordinates(corpse_confidence)
-    x, y = coordinates
-    click(device, x, y)
+    click(device, coordinates)
     time.sleep(3)
 
 
 def collect():
     logging.info("正在匹配采集图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(collect_icon, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(collect_icon, confidence)
+    click(device, coordinates)
     time.sleep(3)
+
+
+def check_none_available():
+    """
+    检查是否弹出 无可用工程船
+    :return:
+    """
+    get_screenshot(device)
+    coordinates = get_coordinate(none_available, confidence)
+    if coordinates:
+        back(device)
+        logging.info("无可用工程船")
+        raise TypeError
+    return False
 
 
 def debris_process():
     logging.info("开始采集残骸流程>>>")
-    for i in range(5):
-        try:
-            find_debris()
-            collect()
-            time.sleep(60)
-        except TypeError:
-            logging.info("未匹配<<<")
+    ships = 1
+    try:
+        for template in debris_templates:
+            get_screenshot(device)
+            debris = move_coordinates(template, no_click_zones)
+            if debris:
+                for i in debris:
+                    logging.info(ships)
+                    # if ships > 6:
+                    #     return
+                    # ========== DEBUG =========
+                    # get_screenshot(device)
+                    # original = cv2.imread("screenshot.png")
+                    # cv2.rectangle(original, (i[0] - 8, i[1] - 9), (i[0] + 10, i[1] + 10), (0, 0, 255), 1)
+                    # cv2.imshow('rect', original)
+                    # cv2.waitKey(0)
+                    # cv2.destroyAllWindows()
+                    # ==========================
+                    click(device, i)
+                    time.sleep(2)
+                    collect()
+                    check_none_available()
+                    time.sleep(45)
+                    ships += 1
+    except TypeError:
+        logging.info("结束<<<")
 
 
 # ------------------------------------------------------------------------
@@ -420,8 +453,8 @@ def find_radar():
     logging.info("正在匹配雷达图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(radar_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(radar_icon, confidence)
+        click(device, coordinates)
         time.sleep(2)
     except TypeError:
         logging.info("未匹配雷达图标<<<")
@@ -432,8 +465,8 @@ def find_search():
     logging.info("正在匹配搜索图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(search_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(search_icon, confidence)
+        click(device, coordinates)
         time.sleep(2)
     except TypeError:
         logging.info("未匹配搜索图标<<<")
@@ -444,8 +477,8 @@ def find_repair():
     logging.info("正在匹配维修图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(repair_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(repair_icon, confidence)
+        click(device, coordinates)
         time.sleep(1)
     except TypeError:
         logging.info("未匹配维修图标<<<")
@@ -456,8 +489,8 @@ def find_use():
     logging.info("正在匹配使用图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_use_props, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_use_props, confidence)
+        click(device, coordinates)
         time.sleep(1)
         return True
     except TypeError:
@@ -468,8 +501,8 @@ def find_buy():
     logging.info("正在匹配购买图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_buy, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_buy, confidence)
+        click(device, coordinates)
         time.sleep(1)
         return True
     except TypeError:
@@ -481,8 +514,8 @@ def find_max():
     try:
         logging.info("正在匹配max图标>>>")
         get_screenshot(device)
-        x, y = get_coordinate(button_max, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_max, confidence)
+        click(device, coordinates)
         time.sleep(1)
     except TypeError:
         logging.info("未匹配max图标<<<")
@@ -492,8 +525,8 @@ def find_max():
 def find_use_props():
     logging.info("正在匹配使用道具图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(button_use_energy, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(button_use_energy, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
 
@@ -501,8 +534,8 @@ def find_use_props():
 def find_use_gec_buy_energy():
     logging.info("正在匹配购买能量图标>>>")
     get_screenshot(device)
-    x, y = get_coordinate(button_use_gec_buy_energy, confidence)
-    click(device, x, y)
+    coordinates = get_coordinate(button_use_gec_buy_energy, confidence)
+    click(device, coordinates)
     time.sleep(1)
 
 
@@ -538,8 +571,8 @@ def open_system():
     logging.info("正在匹配系统图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_system, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_system, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配系统图标<<<")
@@ -549,8 +582,8 @@ def open_talent():
     logging.info("正在匹配天赋图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_talent, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_talent, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配天赋图标<<<")
@@ -560,8 +593,8 @@ def change_talent():
     logging.info("正在匹配修改天赋图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_change_talent, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_change_talent, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配修改天赋图标<<<")
@@ -571,8 +604,8 @@ def change_talent_rc():
     logging.info("正在匹配获得RC增加图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_talent_increase_rc, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_talent_increase_rc, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配获得RC增加图标<<<")
@@ -582,8 +615,8 @@ def change_talent_order():
     logging.info("正在匹配订单数量增加图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_talent_increase_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_talent_increase_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配订单数量增加图标<<<")
@@ -593,8 +626,8 @@ def confirm_change_talent():
     logging.info("正在匹配确认修改天赋图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_confirm_change_talent, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_confirm_change_talent, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配确认修改天赋图标<<<")
@@ -618,8 +651,8 @@ def open_orders():
     logging.info("正在匹配订单图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配订单图标<<<")
@@ -629,8 +662,8 @@ def deliver_all():
     logging.info("正在匹配一键交付图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_deliver_all, 0.48)
-        click(device, x, y)
+        coordinates = get_coordinate(button_deliver_all, 0.48)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配一键交付图标<<<")
@@ -640,8 +673,8 @@ def confirm_deliver():
     logging.info("正在匹配确认交付图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_confirm_deliver, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_confirm_deliver, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配确认交付图标<<<")
@@ -651,8 +684,8 @@ def depart():
     logging.info("正在匹配离港图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_depart, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_depart, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配离港图标<<<")
@@ -662,8 +695,8 @@ def close_orders():
     logging.info("正在匹配关闭订单图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_close_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_close_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配关闭订单图标<<<")
@@ -673,8 +706,8 @@ def more_order():
     logging.info("正在匹配更多订单图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_more_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_more_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配更多订单图标<<<")
@@ -684,8 +717,8 @@ def next_order():
     logging.info("正在匹配下一批图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(button_next_orders, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(button_next_orders, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配下一批图标<<<")
@@ -719,8 +752,8 @@ def space_station():
     logging.info("正在匹配空间站图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(space_station_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(space_station_icon, confidence)
+        click(device, coordinates)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配空间站图标<<<")
@@ -731,8 +764,8 @@ def star_system():
     logging.info("正在匹配星系图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(star_system_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(star_system_icon, confidence)
+        click(device, coordinates)
         time.sleep(10)
     except TypeError:
         logging.info("未匹配星系图标<<<")
@@ -752,16 +785,15 @@ def find_close():
     logging.info("正在寻找关闭图标>>>")
     coordinates = find_close_icons(confidence)
     if coordinates:
-        x, y = coordinates
-        click(device, x, y)
+        click(device, coordinates)
 
 
 def home():
     logging.info("正在匹配主页图标>>>")
     try:
         get_screenshot(device)
-        x, y = get_coordinate(home_icon, confidence)
-        click(device, x, y)
+        coordinates = get_coordinate(home_icon, confidence)
+        click(device, coordinates)
         time.sleep(3)
     except TypeError:
         logging.info("未匹配主页图标<<<")
@@ -774,8 +806,7 @@ def relogin():
         get_screenshot(device)
         coordinates = get_coordinate(button_relogin, confidence)
         if coordinates:
-            x, y = coordinates
-            click(device, x, y)
+            click(device, coordinates)
             time.sleep(10)
     except TypeError:
         return
@@ -853,7 +884,7 @@ def combat_checks(callback):
     fighting = False
     check_time = 0
 
-    while to_battle and check_time < 120:
+    while to_battle and check_time < 180:
         logging.debug("检查是否进入战斗")
         check_time += 1
         if in_battle_check():
@@ -902,5 +933,6 @@ def main_loop():
         attack_normal_process()
     if if_wreckage:
         debris_process()
+        time.sleep(120)
     else:
         time.sleep(60)
