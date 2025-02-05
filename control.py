@@ -158,6 +158,7 @@ def initialize(game_virtual_num, game_offset, game_confidence, game_monster_conf
     global device
     device = adb_connect(game_virtual_num)
     send_scripts(device)
+    get_screenshot(device)
 
     global if_reset, if_relogin
     global offset, confidence, monster_confidence, corpse_confidence, hidden_interval, relogin_time
