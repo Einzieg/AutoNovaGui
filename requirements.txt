@@ -1,4 +1,4 @@
-pyinstaller==5.8.0
+pyinstaller~=6.11.1
 opencv-python~=4.10
 numpy~=1.24.2
 setuptools~=68.2.2

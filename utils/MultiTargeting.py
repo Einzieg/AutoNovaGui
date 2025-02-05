@@ -1,13 +1,5 @@
-import time
-
 import cv2
 import numpy as np
-
-from Adbutils import adb_connect, get_screenshot, click
-
-template = cv2.imread("static/novaimgs/acquisition/elite_wreckage.png")
-# device = adb_connect(0)
-# get_screenshot(device)
 
 
 def non_max_suppression(boxes, scores, overlap_thresh=0.3):
@@ -53,22 +45,23 @@ def non_max_suppression(boxes, scores, overlap_thresh=0.3):
     return pick
 
 
-def get_coordinate(template, believe):
-    original = cv2.imread("screenshot.png")
+def get_coordinate(template):
+    # original = cv2.imread("screenshot.png")
+
     img = cv2.imread("screenshot.png")
     h, w = template.shape[:2]
     ret = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
 
     # 筛选出匹配程度大于 believe 的坐标
-    threshold = believe
+    threshold = 0.75
     locations = np.where(ret >= threshold)
     boxes = []
 
-    # 构建候选框，记录每个框的位置和分数
+    # 记录每个坐标的位置和分数
     for pt in zip(*locations[::-1]):
         boxes.append([pt[0], pt[1], w, h])
 
-    result = []
+    results = []
 
     # 使用 NMS 进行重叠去除
     if len(boxes) > 0:
@@ -76,21 +69,31 @@ def get_coordinate(template, believe):
         scores = ret[locations]
         picks = non_max_suppression(boxes, scores)
 
-        # 绘制矩形框
         for pick in picks:
             pt = boxes[pick]
-            result.append([pt[0], pt[1]])
-            cv2.rectangle(original, (pt[0], pt[1]), (pt[0] + pt[2], pt[1] + pt[3]), (0, 0, 255), 1)
+            results.append([pt[0], pt[1]])
+    # =============== DEBUG ==============
+    #         cv2.rectangle(original, (pt[0], pt[1]), (pt[0] + pt[2], pt[1] + pt[3]), (0, 0, 255), 1)
+    # print(results)
+    # # 显示结果图像
+    # cv2.imshow('rect', original)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    # ====================================
+    return results
 
-    print(result)
-    # 显示结果图像
-    cv2.imshow('rect', original)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    return result
+
+def is_within_no_click_zone(x, y, no_click):
+    for (x1, y1, x2, y2) in no_click:
+        if x1 <= x <= x2 and y1 <= y <= y2:
+            return True
+    return False
 
 
-def move_coordinates(results):
+def move_coordinates(template, no_click):
+    results = get_coordinate(template)
+    if not results:
+        return
     new_coordinates = [results[0]]
     target = [960, 540]
     # 计算第一个坐标移动到目标点的偏移
@@ -99,22 +102,11 @@ def move_coordinates(results):
     for res in range(1, len(results)):
         new_x = results[res][0] + offset[0]
         new_y = results[res][1] + offset[1]
-        if new_x <= 1920 and new_y <= 1080:
+
+        # 确保新坐标在屏幕范围内并且不在禁止点击区域内
+        if (0 <= new_x <= 1920 and 0 <= new_y <= 1080) and not is_within_no_click_zone(new_x, new_y, no_click):
             new_coordinates.append([new_x, new_y])
-        offset = [target[0] - result[res][0], target[1] - result[res][1]]
-    print(new_coordinates)
+            # 更新偏移量
+            offset = [target[0] - results[res][0], target[1] - results[res][1]]
+
     return new_coordinates
-
-
-result = get_coordinate(template, 0.73)
-res2 = move_coordinates(result)
-
-# for i in res2:
-#     get_screenshot(device)
-#     original = cv2.imread("screenshot.png")
-#     cv2.rectangle(original, (i[0]-8, i[1]-9), (i[0] + 10, i[1] + 10), (0, 0, 255), 1)
-#     cv2.imshow('rect', original)
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
-#     click(device, i)
-#     time.sleep(2)

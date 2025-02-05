@@ -7,6 +7,7 @@ import time
 import cv2
 
 from Adbutils import adb_connect, get_screenshot, zoom_out, click, back, send_scripts
+from utils.MultiTargeting import move_coordinates
 
 
 def cv_imread(relative_path):
@@ -35,6 +36,7 @@ red_monster_templates = [cv_imread('static/novaimgs/red_invade/wandering.png'),
                          cv_imread('static/novaimgs/red_invade/lv6_node.png')]
 # 加载残骸图标
 debris_templates = [cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
+                    cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
                     cv_imread('static/novaimgs/acquisition/alloy_wreckage.png'),
                     cv_imread('static/novaimgs/acquisition/crystal_wreckage.png')]
 # 加载采集图标
@@ -113,18 +115,21 @@ button_next_orders = cv_imread('static/novaimgs/order/fast_forward.png')
 in_relogin_icon = cv_imread('static/novaimgs/identify_in/in_relogin.png')
 # 战斗检查
 in_battle = cv_imread('static/novaimgs/identify_in/in_battle.png')
+# 无可用工程船
+none_available = cv_imread('static/novaimgs/acquisition/none_available.png')
 
 # 禁止点击区
 no_click_zones = [
     (0, 0, 500, 260),  # 左上角人物
-    (490, 0, 680, 140),  # 3D
-    (946, 524, 974, 552),  # 中央
+    (490, 0, 680, 130),  # 3D
+    # (946, 524, 974, 552),  # 中央
     (800, 0, 1920, 100),  # 上方资源栏
-    (1300, 100, 1920, 270),  # 右上角活动*2
+    (1300, 100, 1920, 270),  # 右上角活动*3
     # (910, 0, 1920, 250),  # 右上角活动*5
-    (0, 950, 1920, 1080),  # 下方聊天栏
-    (1600, 888, 1920, 1080),  # 星系按钮
-    (5, 0, 5, 1080),  # 左侧屏幕边缘
+    (1700, 270, 1920, 400),  # 极乐入口
+    (0, 950, 1300, 1080),  # 下方聊天栏
+    (1350, 870, 1920, 1080),  # 星云按钮
+    # (5, 0, 5, 1080),  # 左侧屏幕边缘
     (1680, 250, 1920, 750)  # 右侧活动及快捷菜单
 ]
 
@@ -221,8 +226,6 @@ def get_coordinate(img, believe, forbidden_zones=None):
         # cv2.imshow('result', img)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
-        # plt.imshow(screenshot, cmap='gray')
-        # plt.show()
         # ===============
         icon_center_x = max_loc[0] + icon_w // 2
         icon_center_y = max_loc[1] + icon_h // 2
@@ -397,15 +400,48 @@ def collect():
     time.sleep(3)
 
 
+def check_none_available():
+    """
+    检查是否弹出 无可用工程船
+    :return:
+    """
+    get_screenshot(device)
+    coordinates = get_coordinate(none_available, confidence)
+    if coordinates:
+        back(device)
+        logging.info("无可用工程船")
+        raise TypeError
+    return False
+
+
 def debris_process():
     logging.info("开始采集残骸流程>>>")
-    for i in range(5):
-        try:
-            find_debris()
-            collect()
-            time.sleep(60)
-        except TypeError:
-            logging.info("未匹配<<<")
+    ships = 1
+    try:
+        for template in debris_templates:
+            get_screenshot(device)
+            debris = move_coordinates(template, no_click_zones)
+            if debris:
+                for i in debris:
+                    logging.info(ships)
+                    # if ships > 6:
+                    #     return
+                    # ========== DEBUG =========
+                    # get_screenshot(device)
+                    # original = cv2.imread("screenshot.png")
+                    # cv2.rectangle(original, (i[0] - 8, i[1] - 9), (i[0] + 10, i[1] + 10), (0, 0, 255), 1)
+                    # cv2.imshow('rect', original)
+                    # cv2.waitKey(0)
+                    # cv2.destroyAllWindows()
+                    # ==========================
+                    click(device, i)
+                    time.sleep(2)
+                    collect()
+                    check_none_available()
+                    time.sleep(45)
+                    ships += 1
+    except TypeError:
+        logging.info("结束<<<")
 
 
 # ------------------------------------------------------------------------
@@ -847,7 +883,7 @@ def combat_checks(callback):
     fighting = False
     check_time = 0
 
-    while to_battle and check_time < 120:
+    while to_battle and check_time < 180:
         logging.debug("检查是否进入战斗")
         check_time += 1
         if in_battle_check():
@@ -896,5 +932,6 @@ def main_loop():
         attack_normal_process()
     if if_wreckage:
         debris_process()
+        time.sleep(120)
     else:
         time.sleep(60)

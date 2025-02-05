@@ -38,8 +38,10 @@ def resource_path(relative_path):
 
 
 class GuiApp:
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, root_app, level=logging.DEBUG):
+        self.level = level
+        self.log_text_handler = None
+        self.root = root_app
         self.root.title("NovaAH")
         self.root.iconbitmap(resource_path("static/ico/auto.ico"))
         self.root.geometry("850x800")
@@ -263,7 +265,7 @@ class GuiApp:
 
         log_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
         root_logger = logging.getLogger()
-        root_logger.setLevel(root_logger.level)
+        root_logger.setLevel(self.level)
 
         log_file_handler = logging.FileHandler(filename=os.path.join(log_dir, f"AutoNova_{datetime.now().strftime('%Y-%m-%d')}.log"), mode='a', encoding='utf-8')
         log_file_handler.setFormatter(log_formatter)
@@ -390,8 +392,7 @@ class GuiApp:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     root = Window(themename='darkly')
-    app = GuiApp(root)
+    app = GuiApp(root, level=logging.DEBUG)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)  # 在窗口关闭时保存配置并关闭窗口
     root.mainloop()
