@@ -94,7 +94,7 @@ def move_coordinates(template, no_click):
     results = get_coordinate(template)
     if not results:
         return
-    new_coordinates = [results[0]]
+    new_coordinates = [results[0]]  # 直接添加第一个坐标
     target = [960, 540]
     # 计算第一个坐标移动到目标点的偏移
     offset = [target[0] - results[0][0], target[1] - results[0][1]]
@@ -106,7 +106,7 @@ def move_coordinates(template, no_click):
         # 确保新坐标在屏幕范围内并且不在禁止点击区域内
         if (0 <= new_x <= 1920 and 0 <= new_y <= 1080) and not is_within_no_click_zone(new_x, new_y, no_click):
             new_coordinates.append([new_x, new_y])
-            # 更新偏移量
-            offset = [target[0] - results[res][0], target[1] - results[res][1]]
+        # 更新偏移量
+        offset = [target[0] - results[res][0], target[1] - results[res][1]]
 
     return new_coordinates

@@ -9,8 +9,10 @@ import time
 
 from ttkbootstrap import *
 
-from control import initialize
-from control import main_loop
+from control import Control
+
+
+# from control import main_loop
 
 
 class TextHandler(logging.Handler):
@@ -362,24 +364,23 @@ class GuiApp:
     # 主函数
     def run_script(self):
         try:
-            initialize(game_virtual_num=self.virtual_num.get(),
-                       game_offset=self.offset.get(),
-                       game_confidence=self.confidence.get(),
-                       game_monster_confidence=self.monster_confidence.get(),
-                       game_corpse_confidence=self.corpse_confidence.get(),
-                       game_relogin_time=self.relogin_time.get(),
-                       game_if_elite_monster=self.if_elite_monsters.get(),
-                       game_if_normal_monster=self.if_normal_monster.get(),
-                       game_if_wreckage=self.if_wreckage.get(),
-                       game_if_apocalypse=self.if_apocalypse.get(),
-                       game_if_hidden=self.if_hidden.get(),
-                       game_if_hidden_gec=self.if_hidden_gec.get(),
-                       game_if_orders=self.if_order.get(),
-                       game_if_relogin=self.if_relogin.get(),
-                       )
-            time.sleep(3)
+            control = Control(game_virtual_num=self.virtual_num.get(),
+                              game_offset=self.offset.get(),
+                              game_confidence=self.confidence.get(),
+                              game_monster_confidence=self.monster_confidence.get(),
+                              game_corpse_confidence=self.corpse_confidence.get(),
+                              game_relogin_time=self.relogin_time.get(),
+                              game_if_elite_monster=self.if_elite_monsters.get(),
+                              game_if_normal_monster=self.if_normal_monster.get(),
+                              game_if_wreckage=self.if_wreckage.get(),
+                              game_if_apocalypse=self.if_apocalypse.get(),
+                              game_if_hidden=self.if_hidden.get(),
+                              game_if_hidden_gec=self.if_hidden_gec.get(),
+                              game_if_orders=self.if_order.get(),
+                              game_if_relogin=self.if_relogin.get(),
+                              )
             while self.running:
-                main_loop()
+                control.main_loop()
                 time.sleep(3)
         except ConnectionError as e:
             logging.error(f"连接模拟器失败: {e}")
