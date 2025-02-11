@@ -121,7 +121,8 @@ class AdbClient:
                 stderr=subprocess.PIPE,
                 text=True,
                 encoding='utf-8',
-                errors='replace'
+                errors='replace',
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             elapsed = time.time() - start_time
             logging.debug(f"命令执行耗时: {elapsed:.2f}s")
