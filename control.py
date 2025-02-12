@@ -36,7 +36,6 @@ red_monster_templates = [cv_imread('static/novaimgs/red_invade/wandering.png'),
                          cv_imread('static/novaimgs/red_invade/lv6_node.png')]
 # 加载残骸图标
 debris_templates = [cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
-                    cv_imread('static/novaimgs/acquisition/elite_wreckage.png'),
                     cv_imread('static/novaimgs/acquisition/alloy_wreckage.png'),
                     cv_imread('static/novaimgs/acquisition/crystal_wreckage.png')]
 # 加载采集图标
@@ -169,8 +168,9 @@ class Control:
                  game_if_hidden_gec,  # 是否开启GEC隐秘
                  game_if_orders,  # 是否开启订单
                  game_if_relogin,  # 是否开启重登
+                 game_mumu_path,  # Mumu路径
                  ):
-        self.device = DeviceUtils(instance_index=game_virtual_num)
+        self.device = DeviceUtils(instance_index=game_virtual_num, mumu_path=game_mumu_path)
         self.offset = game_offset
         self.confidence = game_confidence
         self.monster_confidence = game_monster_confidence
@@ -184,6 +184,7 @@ class Control:
         self.if_hidden_gec = game_if_hidden_gec
         self.if_orders = game_if_orders
         self.if_relogin = game_if_relogin
+        self.device.push_scripts()
         if self.if_hidden:
             logging.info("开启刷隐秘,其它功能将被关闭")
             self.if_reset, self.if_normal_monster, self.if_elite_monster, self.if_apocalypse, self.if_wreckage, self.if_orders = False, False, False, False, False, False

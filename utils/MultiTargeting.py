@@ -94,19 +94,31 @@ def move_coordinates(template, no_click):
     results = get_coordinate(template)
     if not results:
         return
-    new_coordinates = [results[0]]  # 直接添加第一个坐标
+
+    # 找到第一个不在禁用区的坐标
+    start_index = 0
+    while start_index < len(results) and is_within_no_click_zone(results[start_index][0], results[start_index][1], no_click):
+        start_index += 1
+
+    # 如果没有找到不在禁用区的坐标，返回 False
+    if start_index >= len(results):
+        return False
+
+    # 从第一个不在禁用区的坐标开始
+    new_coordinates = [results[start_index]]
     target = [960, 540]
     # 计算第一个坐标移动到目标点的偏移
-    offset = [target[0] - results[0][0], target[1] - results[0][1]]
+    offset = [target[0] - results[start_index][0], target[1] - results[start_index][1]]
 
-    for res in range(1, len(results)):
+    for res in range(start_index + 1, len(results)):
         new_x = results[res][0] + offset[0]
         new_y = results[res][1] + offset[1]
 
         # 确保新坐标在屏幕范围内并且不在禁止点击区域内
         if (0 <= new_x <= 1920 and 0 <= new_y <= 1080) and not is_within_no_click_zone(new_x, new_y, no_click):
             new_coordinates.append([new_x, new_y])
-        # 更新偏移量
-        offset = [target[0] - results[res][0], target[1] - results[res][1]]
+            # 更新偏移量
+            offset = [target[0] - results[res][0], target[1] - results[res][1]]
 
     return new_coordinates
+

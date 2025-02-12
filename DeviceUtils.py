@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 
+from mmumu.api import get_mumu_path
 from msc.minicap import MiniCap
 from msc.mumu import MuMuScreenCap
 from mtc.mumu import MuMuTouch
@@ -10,7 +11,7 @@ from AdbClient import AdbClient
 
 
 class DeviceUtils:
-    def __init__(self, ip="127.0.0.1", port=5555, instance_index=None):
+    def __init__(self, ip="127.0.0.1", port=5555, instance_index=None, mumu_path=None):
         """
         初始化DeviceUtils实例。
         :param ip: 设备IP地址，默认为"127.0.0.1"。
@@ -24,6 +25,13 @@ class DeviceUtils:
         if instance_index is not None:
             self.port = 16384 + 32 * instance_index
             logging.info(f"计算端口号为 {self.port}")
+
+        if mumu_path:
+            self.mumu_path = mumu_path
+            logging.info(f"使用 mumu_path: {self.mumu_path}")
+        else:
+            self.mumu_path = None
+            logging.info(f"未设置 mumu_path,获取路径: {get_mumu_path()}")
 
         # 初始化 ADB 客户端并保持连接
         self.adb = AdbClient(ip=self.ip, port=self.port)
@@ -48,8 +56,8 @@ class DeviceUtils:
     def push_scripts(self):
         """推送脚本文件到设备"""
         try:
-            self.adb.push(self.resource_path("static/zoom_in.sh"), "/sdcard/zoom_in.sh")
-            self.adb.push(self.resource_path("static/zoom_out.sh"), "/sdcard/zoom_out.sh")
+            self.adb.push(self.resource_path("../static/zoom_in.sh"), "/sdcard/zoom_in.sh")
+            self.adb.push(self.resource_path("../static/zoom_out.sh"), "/sdcard/zoom_out.sh")
             logging.debug("脚本文件推送成功")
         except Exception as e:
             logging.error(f"推送脚本文件时出错: {str(e)}")
@@ -76,7 +84,10 @@ class DeviceUtils:
     def mumu_screencap(self, file_name: str = "screenshot.png"):
         """使用MuMu进行屏幕截图"""
         try:
-            mumu = MuMuScreenCap(self.instance_index)
+            if self.mumu_path:
+                mumu = MuMuScreenCap(instance_index=self.instance_index, emulator_install_path=self.mumu_path)
+            else:
+                mumu = MuMuScreenCap(self.instance_index)
             mumu.save_screencap(file_name)
             logging.debug(f"屏幕截图保存为 {file_name}")
         except Exception as e:
@@ -100,7 +111,10 @@ class DeviceUtils:
         """使用MuMu进行点击操作"""
         x, y = coordinates
         try:
-            mumu = MuMuTouch(self.instance_index)
+            if self.mumu_path:
+                mumu = MuMuTouch(instance_index=self.instance_index, emulator_install_path=self.mumu_path)
+            else:
+                mumu = MuMuTouch(self.instance_index)
             mumu.click(x, y)
             logging.debug(f"已点击坐标 ({x}, {y})")
         except Exception as e:

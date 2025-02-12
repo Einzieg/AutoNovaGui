@@ -12,9 +12,6 @@ from ttkbootstrap import *
 from control import Control
 
 
-# from control import main_loop
-
-
 class TextHandler(logging.Handler):
     def __init__(self, text_widget):
         logging.Handler.__init__(self)
@@ -73,7 +70,7 @@ class GuiApp:
         self.confidence = tk.DoubleVar(value=0.75)
         self.monster_confidence = tk.DoubleVar(value=0.65)
         self.corpse_confidence = tk.DoubleVar(value=0.65)
-        self.hidden_interval = tk.IntVar(value=60)
+        self.mumu_path = tk.StringVar(value="")
         self.relogin_time = tk.IntVar(value=60)
 
         self.__tk_label_setting_virtual_num(self.config_frame)
@@ -81,14 +78,14 @@ class GuiApp:
         self.__tk_label_setting_monster_confidence(self.config_frame)
         self.__tk_label_setting_corpse_confidence(self.config_frame)
         self.__tk_label_setting_offset(self.config_frame)
-        # self.__tk_label_hidden_interval(self.config_frame)
+        self.__tk_label_mumu_path(self.config_frame)
         self.__tk_label_setting_relogin_time(self.config_frame)
         self.__tk_input_get_setting_virtual_num(self.config_frame).config(textvariable=self.virtual_num)
         self.__tk_input_get_setting_confidence(self.config_frame).config(textvariable=self.confidence)
         self.__tk_input_get_setting_monster_confidence(self.config_frame).config(textvariable=self.monster_confidence)
         self.__tk_input_get_setting_corpse_confidence(self.config_frame).config(textvariable=self.corpse_confidence)
         self.__tk_input_get_setting_offset(self.config_frame).config(textvariable=self.offset)
-        # self.__tk_label_get_setting_hidden_interval(self.config_frame).config(textvariable=self.hidden_interval)
+        self.__tk_label_get_mumu_path(self.config_frame).config(textvariable=self.mumu_path)
         self.__tk_input_get_setting_relogin_time(self.config_frame).config(textvariable=self.relogin_time)
 
         self.run_options_frame = self.__tk_label_frame_run_choose(self.root)
@@ -170,14 +167,14 @@ class GuiApp:
         label.place(x=2, y=154, width=100, height=35)
         return label
 
-    def __tk_label_hidden_interval(self, parent):
-        label = Label(parent, text="隐秘攻击间隔", anchor="center")
-        label.place(x=2, y=192, width=100, height=35)
-        return label
-
     def __tk_label_setting_relogin_time(self, parent):
         label = Label(parent, text="重登等待时长", anchor="center")
         label.place(x=2, y=192, width=100, height=35)
+        return label
+
+    def __tk_label_mumu_path(self, parent):
+        label = Label(parent, text="mumu路径", anchor="center")
+        label.place(x=2, y=230, width=100, height=35)
         return label
 
     def __tk_input_get_setting_virtual_num(self, parent):
@@ -205,15 +202,15 @@ class GuiApp:
         ipt.place(x=110, y=154, width=180, height=35)
         return ipt
 
-    def __tk_label_get_setting_hidden_interval(self, parent):
-        label = Entry(parent)
-        label.place(x=110, y=192, width=180, height=35)
-        return label
-
     def __tk_input_get_setting_relogin_time(self, parent):
         ipt = Entry(parent)
         ipt.place(x=110, y=192, width=180, height=35)
         return ipt
+
+    def __tk_label_get_mumu_path(self, parent):
+        label = Entry(parent)
+        label.place(x=110, y=230, width=180, height=35)
+        return label
 
     def __tk_label_frame_run_choose(self, parent):
         frame = LabelFrame(parent, text="运行选择")
@@ -324,7 +321,6 @@ class GuiApp:
             self.confidence.set(config.getfloat('Settings', 'confidence', fallback=0.75))
             self.monster_confidence.set(config.getfloat('Settings', 'monster_confidence', fallback=0.65))
             self.corpse_confidence.set(config.getfloat('Settings', 'corpse_confidence', fallback=0.65))
-            self.hidden_interval.set(config.getint('Settings', 'hidden_interval', fallback=90))
             self.relogin_time.set(config.getint('Settings', 'relogin_time', fallback=60))
             self.if_elite_monsters.set(config.getboolean('Settings', 'if_elite_monsters', fallback=True))
             self.if_normal_monster.set(config.getboolean('Settings', 'if_normal_monster', fallback=False))
@@ -334,6 +330,7 @@ class GuiApp:
             self.if_hidden_gec.set(config.getboolean('Settings', 'if_hidden_gec', fallback=False))
             self.if_order.set(config.getboolean('Settings', 'if_order', fallback=False))
             self.if_relogin.set(config.getboolean('Settings', 'if_relogin', fallback=True))
+            self.mumu_path.set(config.get('Settings', 'mumu_path', fallback=''))
 
     def save_config(self):
         config = configparser.ConfigParser()
@@ -343,7 +340,6 @@ class GuiApp:
             'confidence': self.confidence.get(),
             'monster_confidence': self.monster_confidence.get(),
             'corpse_confidence': self.corpse_confidence.get(),
-            'hidden_interval': self.hidden_interval.get(),
             'relogin_time': self.relogin_time.get(),
             'if_elite_monsters': self.if_elite_monsters.get(),
             'if_normal_monster': self.if_normal_monster.get(),
@@ -352,7 +348,8 @@ class GuiApp:
             'if_hidden': self.if_hidden.get(),
             'if_hidden_gec': self.if_hidden_gec.get(),
             'if_order': self.if_order.get(),
-            'if_relogin': self.if_relogin.get()
+            'if_relogin': self.if_relogin.get(),
+            'mumu_path': self.mumu_path.get(),
         }
         with open(self.config_file, 'w') as configfile:
             config.write(configfile)
@@ -378,6 +375,7 @@ class GuiApp:
                               game_if_hidden_gec=self.if_hidden_gec.get(),
                               game_if_orders=self.if_order.get(),
                               game_if_relogin=self.if_relogin.get(),
+                              game_mumu_path=self.mumu_path.get()
                               )
             while self.running:
                 control.main_loop()
