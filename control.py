@@ -6,7 +6,7 @@ import time
 
 import cv2
 
-from DeviceUtils import DeviceUtils
+from utils.DeviceUtils import DeviceUtils
 from utils.MultiTargeting import move_coordinates
 
 

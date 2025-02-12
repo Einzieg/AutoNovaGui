@@ -1,12 +1,9 @@
 import logging
-import os
-import sys
 
-from mmumu.api import get_mumu_path
 from msc.minicap import MiniCap
-from msc.mumu import MuMuScreenCap
+from msc.mumu import MuMuScreenCap, get_mumu_path
 from mtc.mumu import MuMuTouch
-
+from path_util import resource_path
 from AdbClient import AdbClient
 
 
@@ -36,15 +33,6 @@ class DeviceUtils:
         # 初始化 ADB 客户端并保持连接
         self.adb = AdbClient(ip=self.ip, port=self.port)
 
-    @staticmethod
-    def resource_path(relative_path):
-        """获取资源文件的绝对路径"""
-        try:
-            base_path = getattr(sys, '_MEIPASS', os.path.abspath("utils"))
-        except AttributeError:
-            base_path = os.path.abspath("utils")
-        return os.path.join(base_path, relative_path)
-
     def adb_shell(self, command):
         """执行ADB shell命令"""
         try:
@@ -56,8 +44,8 @@ class DeviceUtils:
     def push_scripts(self):
         """推送脚本文件到设备"""
         try:
-            self.adb.push(self.resource_path("../static/zoom_in.sh"), "/sdcard/zoom_in.sh")
-            self.adb.push(self.resource_path("../static/zoom_out.sh"), "/sdcard/zoom_out.sh")
+            self.adb.push(resource_path("static/zoom_in.sh"), "/sdcard/zoom_in.sh")
+            self.adb.push(resource_path("static/zoom_out.sh"), "/sdcard/zoom_out.sh")
             logging.debug("脚本文件推送成功")
         except Exception as e:
             logging.error(f"推送脚本文件时出错: {str(e)}")
