@@ -36,7 +36,7 @@ def non_max_suppression(boxes, scores, overlap_thresh=0.3):
             overlap = inter_area / float(box_area + box_area2 - inter_area)
 
             # 如果重叠度大于阈值, 进行抑制
-            if overlap > overlap_thresh:
+            if overlap > 0.3:
                 suppress.append(j)
 
         # 删除已经抑制的框 移除 suppress 中的索引

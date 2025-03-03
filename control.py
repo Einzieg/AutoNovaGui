@@ -242,8 +242,7 @@ class Control:
     # ------------------------------------------------------------------------
     # 依次匹配精英怪物模板
     def find_monster_coordinates(self, believe):
-        self.device.mumu_screencap()
-        self.device.mumu_screencap()
+        self.device.screencap()
         for template in monster_templates:
             coords = self.get_coordinate(template, believe, no_click_zones)
             if coords is not None:
@@ -255,14 +254,13 @@ class Control:
     def find_monsters(self):
         logging.info("正在寻找精英怪>>>")
         coordinates = self.find_monster_coordinates(self.monster_confidence)
-        self.device.mumu_click(coordinates)
-
+        self.device.click(coordinates)
         time.sleep(3)
 
     # ------------------------------------------------------------------------
     # 依次匹配普通怪模板
     def find_normal_monster_coordinates(self, believe):
-        self.device.mumu_screencap()
+        self.device.screencap()
         for template in normal_monster_templates:
             coords = self.get_coordinate(template, believe, no_click_zones)
             if coords is not None:
@@ -272,7 +270,7 @@ class Control:
 
     # 依次匹配深红怪模板
     def find_red_monster_coordinates(self, believe):
-        self.device.mumu_screencap()
+        self.device.screencap()
         for template in red_monster_templates:
             coords = self.get_coordinate(template, believe, no_click_zones)
             if coords is not None:
@@ -284,14 +282,14 @@ class Control:
     def find_normal_monsters(self):
         logging.info("正在寻找普通怪>>>")
         coordinates = self.find_normal_monster_coordinates(self.monster_confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(3)
 
     # 点击深红怪
     def find_red_monsters(self):
         logging.info("正在寻找深红怪>>>")
         coordinates = self.find_red_monster_coordinates(self.monster_confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(3)
 
     # ------------------------------------------------------------------------
@@ -299,29 +297,26 @@ class Control:
     # 点击攻击
     def attack_monsters(self):
         logging.info("正在匹配攻击图标>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         coordinates = self.get_coordinate(attack_icon, self.confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(3)
 
     # 选择全部
     def select_all(self):
         logging.info("正在匹配选择全部图标>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         coordinates = self.get_coordinate(select_all_icon, self.confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(1)
 
     # 确定
     def confirm(self):
         logging.info("正在匹配确定图标>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         coordinates = self.get_coordinate(confirm_icon, self.confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(1)
-
-        # global ATTACKS_NO
-        # ATTACKS_NO += 1
 
     # 刷精英怪流程
     def attack_process(self):
@@ -366,7 +361,7 @@ class Control:
     # ------------------------------------------------------------------------
     # 依次匹配残骸图标
     def find_debris_coordinates(self, believe):
-        self.device.mumu_screencap()
+        self.device.screencap()
         for template in debris_templates:
             coords = self.get_coordinate(template, believe, no_click_zones)
             if coords is not None:
@@ -377,15 +372,15 @@ class Control:
     def find_debris(self):
         logging.info("正在寻找残骸>>>")
         coordinates = self.find_debris_coordinates(self.corpse_confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(3)
 
     def collect(self):
         logging.info("正在匹配采集图标>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         try:
             coordinates = self.get_coordinate(collect_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
         except TypeError:
             if self.get_coordinate(return_icon, self.confidence):
                 self.device.click_back()
@@ -397,7 +392,7 @@ class Control:
         检查是否弹出 无可用工程船
         :return:
         """
-        self.device.mumu_screencap()
+        self.device.screencap()
         coordinates = self.get_coordinate(none_available, self.confidence)
         if coordinates:
             self.device.click_back()
@@ -409,21 +404,21 @@ class Control:
         logging.info("开始采集残骸流程>>>")
         try:
             for template in debris_templates:
-                self.device.mumu_screencap()
+                self.device.screencap()
                 debris = move_coordinates(template, no_click_zones)
                 if debris:
                     for i in debris:
                         # if ships > 6:
                         #     return
                         # ========== DEBUG =========
-                        # self.device.mumu_screencap()
+                        # self.device.get_screencap()
                         # original = cv2.imread("screenshot.png")
                         # cv2.rectangle(original, (i[0] - 8, i[1] - 9), (i[0] + 10, i[1] + 10), (0, 0, 255), 1)
                         # cv2.imshow('rect', original)
                         # cv2.waitKey(0)
                         # cv2.destroyAllWindows()
                         # ==========================
-                        self.device.mumu_click(i)
+                        self.device.click(i)
                         time.sleep(2)
                         self.collect()
                         self.check_none_available()
@@ -432,7 +427,7 @@ class Control:
                         while check < 60:
                             time.sleep(1)
                             check += 1
-                            self.device.mumu_screencap()
+                            self.device.screencap()
                             if self.get_coordinate(button_speedup, self.confidence):
                                 pass
                             else:
@@ -446,9 +441,9 @@ class Control:
     def find_radar(self):
         logging.info("正在匹配雷达图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(radar_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(2)
         except TypeError:
             logging.info("未匹配雷达图标<<<")
@@ -457,9 +452,9 @@ class Control:
     def find_search(self):
         logging.info("正在匹配搜索图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(search_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(2)
         except TypeError:
             logging.info("未匹配搜索图标<<<")
@@ -468,9 +463,9 @@ class Control:
     def find_repair(self):
         logging.info("正在匹配维修图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(repair_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(1)
         except TypeError:
             logging.info("未匹配维修图标<<<")
@@ -479,9 +474,9 @@ class Control:
     def find_use(self):
         logging.info("正在匹配使用图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_use_props, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(1)
             return True
         except TypeError:
@@ -490,9 +485,9 @@ class Control:
     def find_buy(self):
         logging.info("正在匹配购买图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_buy, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(1)
             return True
         except TypeError:
@@ -502,9 +497,9 @@ class Control:
     def find_max(self):
         try:
             logging.info("正在匹配max图标>>>")
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_max, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(1)
         except TypeError:
             logging.info("未匹配max图标<<<")
@@ -512,17 +507,17 @@ class Control:
     # 点击使用道具
     def find_use_props(self):
         logging.info("正在匹配使用道具图标>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         coordinates = self.get_coordinate(button_use_energy, self.confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(1)
 
     # 使用GEC购买能量
     def find_use_gec_buy_energy(self):
         logging.info("正在匹配购买能量图标>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         coordinates = self.get_coordinate(button_use_gec_buy_energy, self.confidence)
-        self.device.mumu_click(coordinates)
+        self.device.click(coordinates)
         time.sleep(1)
 
     # 刷隐秘流程
@@ -555,9 +550,9 @@ class Control:
     def open_system(self):
         logging.info("正在匹配系统图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_system, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配系统图标<<<")
@@ -565,9 +560,9 @@ class Control:
     def open_talent(self):
         logging.info("正在匹配天赋图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_talent, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配天赋图标<<<")
@@ -575,9 +570,9 @@ class Control:
     def change_talent(self):
         logging.info("正在匹配修改天赋图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_change_talent, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配修改天赋图标<<<")
@@ -585,9 +580,9 @@ class Control:
     def change_talent_rc(self):
         logging.info("正在匹配获得RC增加图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_talent_increase_rc, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配获得RC增加图标<<<")
@@ -595,9 +590,9 @@ class Control:
     def change_talent_order(self):
         logging.info("正在匹配订单数量增加图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_talent_increase_orders, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配订单数量增加图标<<<")
@@ -605,9 +600,9 @@ class Control:
     def confirm_change_talent(self):
         logging.info("正在匹配确认修改天赋图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_confirm_change_talent, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配确认修改天赋图标<<<")
@@ -628,9 +623,9 @@ class Control:
     def open_orders(self):
         logging.info("正在匹配订单图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_orders, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配订单图标<<<")
@@ -638,9 +633,9 @@ class Control:
     def deliver_all(self):
         logging.info("正在匹配一键交付图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_deliver_all, 0.48)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配一键交付图标<<<")
@@ -648,9 +643,9 @@ class Control:
     def confirm_deliver(self):
         logging.info("正在匹配确认交付图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_confirm_deliver, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配确认交付图标<<<")
@@ -658,9 +653,9 @@ class Control:
     def depart(self):
         logging.info("正在匹配离港图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_depart, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配离港图标<<<")
@@ -668,9 +663,9 @@ class Control:
     def close_orders(self):
         logging.info("正在匹配关闭订单图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_close_orders, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配关闭订单图标<<<")
@@ -678,9 +673,9 @@ class Control:
     def more_order(self):
         logging.info("正在匹配更多订单图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_more_orders, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配更多订单图标<<<")
@@ -688,9 +683,9 @@ class Control:
     def next_order(self):
         logging.info("正在匹配下一批图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_next_orders, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配下一批图标<<<")
@@ -721,9 +716,9 @@ class Control:
     def space_station(self):
         logging.info("正在匹配空间站图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(space_station_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(10)
         except TypeError:
             logging.info("未匹配空间站图标<<<")
@@ -732,9 +727,9 @@ class Control:
     def star_system(self):
         logging.info("正在匹配星系图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(star_system_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(10)
             return True
         except TypeError:
@@ -742,7 +737,7 @@ class Control:
             return False
 
     def find_close_icons(self, believe):
-        self.device.mumu_screencap()
+        self.device.screencap()
         for template in close_icon:
             coords = self.get_coordinate(template, believe)
             if coords is not None:
@@ -754,14 +749,14 @@ class Control:
         logging.info("正在寻找关闭图标>>>")
         coordinates = self.find_close_icons(self.confidence)
         if coordinates:
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
 
     def home(self):
         logging.info("正在匹配主页图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(home_icon, self.confidence)
-            self.device.mumu_click(coordinates)
+            self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
             logging.info("未匹配主页图标<<<")
@@ -770,17 +765,17 @@ class Control:
         try:
             logging.info(f"{self.relogin_time} 秒后重新登录...")
             time.sleep(self.relogin_time)
-            self.device.mumu_screencap()
+            self.device.screencap()
             coordinates = self.get_coordinate(button_relogin, self.confidence)
             if coordinates:
-                self.device.mumu_click(coordinates)
+                self.device.click(coordinates)
                 time.sleep(10)
         except TypeError:
             return
 
     def in_shortcut_examine(self):
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             if self.get_coordinate(in_shortcut, self.confidence) is not None:
                 self.device.click_back()
                 time.sleep(3)
@@ -790,7 +785,7 @@ class Control:
     # 选择舰队检查
     def in_select_fleet_fun(self):
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             if self.get_coordinate(in_select_fleet, self.confidence) is not None:
                 self.device.click_back()
                 time.sleep(3)
@@ -800,7 +795,7 @@ class Control:
     # 战斗检查
     def in_battle_check(self):
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             if self.get_coordinate(in_battle, self.confidence) is not None:
                 return True
         except TypeError:
@@ -809,7 +804,7 @@ class Control:
     # 星云界面检查
     def in_galaxy_fun(self):
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             if self.get_coordinate(in_galaxy, self.confidence) is not None:
                 self.device.click_back()
                 time.sleep(3)
@@ -820,7 +815,7 @@ class Control:
     def examine_return(self):
         logging.info("正在匹配返回图标>>>")
         try:
-            self.device.mumu_screencap()
+            self.device.screencap()
             if self.get_coordinate(return_icon, self.confidence):
                 self.device.click_back()
                 time.sleep(1)
@@ -830,7 +825,7 @@ class Control:
     # 抢登检查
     def relogin_check(self):
         logging.info("正在检查是否被抢登>>>")
-        self.device.mumu_screencap()
+        self.device.screencap()
         if self.get_coordinate(in_relogin_icon, self.confidence):
             if self.if_relogin:
                 logging.info("被抢登,正在重新登录")
@@ -893,5 +888,5 @@ class Control:
             self.attack_normal_process()
         if self.if_wreckage:
             self.debris_process()
-        else:
-            time.sleep(60)
+        # else:
+        #     time.sleep(60)

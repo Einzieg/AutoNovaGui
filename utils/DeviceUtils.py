@@ -1,10 +1,13 @@
 import logging
+import time
 
+import cv2
 from msc.minicap import MiniCap
 from msc.mumu import MuMuScreenCap, get_mumu_path
 from mtc.mumu import MuMuTouch
-from path_util import resource_path
+
 from AdbClient import AdbClient
+from path_util import resource_path
 
 
 class DeviceUtils:
@@ -18,20 +21,65 @@ class DeviceUtils:
         self.ip = ip
         self.port = port
         self.instance_index = instance_index
+        self.mumu_path = mumu_path
 
         if instance_index is not None:
             self.port = 16384 + 32 * instance_index
             logging.info(f"计算端口号为 {self.port}")
 
-        if mumu_path:
-            self.mumu_path = mumu_path
-            logging.info(f"使用 mumu_path: {self.mumu_path}")
-        else:
-            self.mumu_path = None
-            logging.info(f"未设置 mumu_path,获取路径: {get_mumu_path()}")
-
-        # 初始化 ADB 客户端并保持连接
         self.adb = AdbClient(ip=self.ip, port=self.port)
+
+        # 初始化截图工具
+        self.screencap_tool = self._initialize_screencap()
+
+        # 初始化点击工具
+        self.click_tool = self._initialize_click_tool()
+
+    def _initialize_screencap(self):
+        """根据优先顺序初始化截图工具"""
+        try:
+            # 尝试使用MuMu进行截图
+            if get_mumu_path():
+                self.mumu_path = get_mumu_path()  # 获取MuMu路径
+                mumu_screencap = MuMuScreenCap(self.instance_index, emulator_install_path=self.mumu_path)
+                logging.info("使用MuMu进行屏幕截图")
+                return mumu_screencap
+            else:
+                raise Exception("MuMu路径未找到")
+
+        except Exception as e:
+            logging.error(f"MuMu初始化失败: {str(e)}")
+            try:
+                # 如果MuMu失败，尝试使用Minicap
+                minicap = MiniCap(f"{self.ip}:{self.port}")
+                logging.info("使用Minicap进行屏幕截图")
+                return minicap
+            except Exception as e:
+                logging.error(f"Minicap初始化失败: {str(e)}")
+                # 如果Minicap也失败，则使用ADB进行截图
+                logging.info("使用ADB进行屏幕截图")
+                return self.adb
+
+    def _initialize_click_tool(self):
+        """初始化点击工具"""
+        try:
+            # 尝试使用MuMu进行点击
+            if get_mumu_path():
+                self.mumu_path = get_mumu_path()
+                mumu_touch = MuMuTouch(self.instance_index, emulator_install_path=self.mumu_path)
+                logging.info("使用MuMu进行点击操作")
+                return mumu_touch
+            else:
+                raise Exception("MuMu路径未找到")
+        except Exception as e:
+            logging.error(f"MuMu点击初始化失败: {str(e)}")
+            try:
+                # 如果MuMu失败，尝试使用ADB进行点击
+                logging.info("使用ADB进行点击操作")
+                return self.adb
+            except Exception as e:
+                logging.error(f"ADB点击初始化失败: {str(e)}")
+                raise
 
     def adb_shell(self, command):
         """执行ADB shell命令"""
@@ -69,49 +117,38 @@ class DeviceUtils:
             logging.error(f"执行缩放操作时出错: {str(e)}")
             raise
 
-    def mumu_screencap(self, file_name: str = "screenshot.png"):
-        """使用MuMu进行屏幕截图"""
-        try:
-            if self.mumu_path:
-                mumu = MuMuScreenCap(instance_index=self.instance_index, emulator_install_path=self.mumu_path)
-            else:
-                mumu = MuMuScreenCap(self.instance_index)
-            mumu.save_screencap(file_name)
-            logging.debug(f"屏幕截图保存为 {file_name}")
-        except Exception as e:
-            logging.error(f"使用MuMu进行屏幕截图时出错: {str(e)}")
-            raise
-
-    def minicap_screencap(self, file_name: str = "screenshot.png"):
+    def screencap(self, file_name: str = "screenshot.png"):
         """
-        使用Minicap进行屏幕截图（较慢，非必要不用）
+        使用已经初始化的截图工具进行屏幕截图。
         :param file_name: 保存的文件名，默认为"screenshot.png"
         """
+        start_time = time.time()
         try:
-            minicap = MiniCap(f"{self.ip}:{self.port}")
-            minicap.save_screencap(file_name)
-            logging.debug(f"屏幕截图保存为 {file_name}")
+            if isinstance(self.screencap_tool, MuMuScreenCap):
+                self.screencap_tool.save_screencap(file_name)
+                logging.debug(f"使用MuMu屏幕截图，保存为 {file_name} ,耗时 {time.time() - start_time:.2f}s")
+            elif isinstance(self.screencap_tool, MiniCap):
+                self.screencap_tool.save_screencap(file_name)
+                logging.debug(f"使用Minicap屏幕截图，保存为 {file_name} ,耗时 {time.time() - start_time:.2f}s")
+            else:
+                self.screencap_tool.shell(f"screencap -p /sdcard/{file_name}")
+                self.screencap_tool.pull(f"/sdcard/{file_name}", file_name)
+                logging.debug(f"使用ADB屏幕截图，保存为 {file_name} ,耗时 {time.time() - start_time:.2f}s")
         except Exception as e:
-            logging.error(f"使用Minicap进行屏幕截图时出错: {str(e)}")
+            logging.error(f"截图时出错: {str(e)}")
             raise
+        return cv2.imread(file_name)
 
-    def mumu_click(self, coordinates):
-        """使用MuMu进行点击操作"""
+    def click(self, coordinates):
+        """使用已经初始化的点击工具进行点击操作"""
         x, y = coordinates
         try:
-            if self.mumu_path:
-                mumu = MuMuTouch(instance_index=self.instance_index, emulator_install_path=self.mumu_path)
+            if isinstance(self.click_tool, MuMuTouch):
+                self.click_tool.click(x, y)
+                logging.debug(f"MuMu点击坐标 ({x}, {y})")
             else:
-                mumu = MuMuTouch(self.instance_index)
-            mumu.click(x, y)
-            logging.debug(f"已点击坐标 ({x}, {y})")
+                self.click_tool.shell(f"input tap {x} {y}")
+                logging.debug(f"ADB点击坐标 ({x}, {y})")
         except Exception as e:
             logging.error(f"点击坐标 ({x}, {y}) 时出错: {str(e)}")
             raise
-
-# if __name__ == "__main__":
-#     try:
-#         device = DeviceUtils(instance_index=0)
-#         device.mumu_screencap("screenshot.png")
-#     except Exception as e:
-#         logging.error(f"操作失败: {str(e)}")
