@@ -8,6 +8,7 @@ import cv2
 
 from utils.DeviceUtils import DeviceUtils
 from utils.MultiTargeting import move_coordinates
+from card_game import AutoFlipMemoryGameSolver
 
 
 def cv_imread(relative_path):
@@ -169,6 +170,7 @@ class Control:
                  game_if_orders,  # 是否开启订单
                  game_if_relogin,  # 是否开启重登
                  game_mumu_path,  # Mumu路径
+                 play_card_game,    # 翻牌游戏
                  ):
         self.device = DeviceUtils(instance_index=game_virtual_num, mumu_path=game_mumu_path)
         self.offset = game_offset
@@ -185,6 +187,7 @@ class Control:
         self.if_orders = game_if_orders
         self.if_relogin = game_if_relogin
         self.device.push_scripts()
+        self.play_card_game = play_card_game
         if self.if_hidden:
             logging.info("开启刷隐秘,其它功能将被关闭")
             self.if_reset, self.if_normal_monster, self.if_elite_monster, self.if_apocalypse, self.if_wreckage, self.if_orders = False, False, False, False, False, False
@@ -203,6 +206,9 @@ class Control:
         if self.if_apocalypse:
             logging.info("开启刷深红")
             self.if_reset = True
+        if self.play_card_game:
+            logging.info("开启翻牌游戏")
+            self.if_reset = False
         logging.info("初始化完成...")
 
     def get_coordinate(self, img, believe, forbidden_zones=None):
@@ -888,5 +894,8 @@ class Control:
             self.attack_normal_process()
         if self.if_wreckage:
             self.debris_process()
+        if self.play_card_game:
+            card_game = AutoFlipMemoryGameSolver(self.device)
+            card_game.play_game()
         # else:
         #     time.sleep(60)

@@ -89,6 +89,7 @@ class GuiApp:
         self.if_hidden_gec = tk.BooleanVar(value=False)
         self.if_order = tk.BooleanVar(value=False)
         self.if_relogin = tk.BooleanVar(value=True)
+        self.play_card_game = tk.BooleanVar(value=False)
 
         self.__tk_check_button_if_elite_monsters(self.run_options_frame).config(variable=self.if_elite_monsters)
         self.__tk_check_button_if_normal_monster(self.run_options_frame).config(variable=self.if_normal_monster)
@@ -98,6 +99,7 @@ class GuiApp:
         self.__tk_check_button_if_hidden_gec(self.run_options_frame).config(variable=self.if_hidden_gec)
         self.__tk_check_button_if_orders(self.run_options_frame).config(variable=self.if_order)
         self.__tk_check_button_if_relogin(self.run_options_frame).config(variable=self.if_relogin)
+        self.__tk_check_button_play_card_game(self.run_options_frame).config(variable=self.play_card_game)
 
     def toggle_log(self):
         if self.log_text.winfo_ismapped():
@@ -249,6 +251,11 @@ class GuiApp:
         cb.place(x=10, y=242, width=100, height=30)
         return cb
 
+    def __tk_check_button_play_card_game(self, parent):
+        cb = Checkbutton(parent, bootstyle="round-toggle", text="星辰探宝")
+        cb.place(x=10, y=282, width=100, height=30)
+        return cb
+
     def setup_logging(self):
         log_dir = os.path.join(os.getcwd(), 'logs')
         if not os.path.exists(log_dir):
@@ -367,7 +374,8 @@ class GuiApp:
                               game_if_hidden_gec=self.if_hidden_gec.get(),
                               game_if_orders=self.if_order.get(),
                               game_if_relogin=self.if_relogin.get(),
-                              game_mumu_path=self.mumu_path.get()
+                              game_mumu_path=self.mumu_path.get(),
+                              play_card_game=self.play_card_game.get(),
                               )
             while self.running:
                 control.main_loop()
