@@ -2,7 +2,7 @@ import logging
 import time
 
 import cv2
-
+from path_util import cv_imread
 
 class AutoFlipMemoryGameSolver:
 
@@ -18,14 +18,14 @@ class AutoFlipMemoryGameSolver:
         self.card_templates = {}
 
         for name, path in [
-            ("HERO", "./static/novaimgs/CARD_GAME/v1/HERO.png"),
-            ("PLANET", "./static/novaimgs/CARD_GAME/v1/PLANET.png"),
-            ("SHIP", "./static/novaimgs/CARD_GAME/v1/SHIP.png"),
-            ("SPACE_STATION", "./static/novaimgs/CARD_GAME/v1/SPACE_STATION.png"),
-            ("UNIT", "./static/novaimgs/CARD_GAME/v1/UNIT.png")
+            ("HERO", "static/novaimgs/CARD_GAME/v1/HERO.png"),
+            ("PLANET", "static/novaimgs/CARD_GAME/v1/PLANET.png"),
+            ("SHIP", "static/novaimgs/CARD_GAME/v1/SHIP.png"),
+            ("SPACE_STATION", "static/novaimgs/CARD_GAME/v1/SPACE_STATION.png"),
+            ("UNIT", "static/novaimgs/CARD_GAME/v1/UNIT.png")
         ]:
             try:
-                img = cv2.imread(path)
+                img = cv_imread(path)
                 if img is None:
                     raise FileNotFoundError(f"未能读取文件 {path}")
                 self.card_templates[name] = img

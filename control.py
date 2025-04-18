@@ -1,24 +1,17 @@
 import logging
-import os
 import random
-import sys
 import time
-
+import sys
 import cv2
 
+from card_game import AutoFlipMemoryGameSolver
+from path_util import cv_imread
 from utils.DeviceUtils import DeviceUtils
 from utils.MultiTargeting import move_coordinates
-from card_game import AutoFlipMemoryGameSolver
 
 
-def cv_imread(relative_path):
-    try:
-        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    except AttributeError:
-        base_path = os.path.abspath(".")
-    file_path = os.path.join(base_path, relative_path)
-    return cv2.imread(file_path.__str__())
-
+# 刷隐秘会出现递归超过1000报 maximum recursion depth exceeded while calling a Python object 错误
+sys.setrecursionlimit(3000)
 
 # 加载怪物模板图像
 monster_templates = [cv_imread('static/novaimgs/monsters/leader_lv6.png'),
@@ -101,6 +94,7 @@ button_confirm_change_talent = cv_imread('static/novaimgs/talent/confirm_replace
 button_orders = cv_imread('static/novaimgs/order/to_order.png')
 # 加载一键交付
 button_deliver_all = cv_imread('static/novaimgs/order/delivery.png')
+pcba_deliver = cv_imread('static/novaimgs/order/PCBA_delivery.png')
 # 加载确认交付
 button_confirm_deliver = cv_imread('static/novaimgs/order/confirm_delivery.png')
 # 加载离港图标
@@ -119,6 +113,10 @@ in_battle = cv_imread('static/novaimgs/identify_in/in_battle.png')
 none_available = cv_imread('static/novaimgs/acquisition/none_available.png')
 # 加速
 button_speedup = cv_imread('static/novaimgs/button/speed_up.png')
+# 复仇
+revenge = cv_imread('static/novaimgs/attack/revenge.png')
+# 复仇攻击
+revenge_attack = cv_imread('static/novaimgs/attack/revenge_attack.png')
 
 # 禁止点击区
 no_click_zones = [
@@ -307,6 +305,15 @@ class Control:
         coordinates = self.get_coordinate(attack_icon, self.confidence)
         self.device.click(coordinates)
         time.sleep(3)
+
+        # 检查是否弹出复仇提示
+        self.device.screencap()
+        if self.get_coordinate(revenge, self.confidence):
+            logging.info("出现复仇>>>")
+            coordinates = self.get_coordinate(revenge_attack, self.confidence)
+            self.device.click(coordinates)
+            time.sleep(3)
+            # self.attack_monsters()
 
     # 选择全部
     def select_all(self):
@@ -640,7 +647,7 @@ class Control:
         logging.info("正在匹配一键交付图标>>>")
         try:
             self.device.screencap()
-            coordinates = self.get_coordinate(button_deliver_all, 0.48)
+            coordinates = self.get_coordinate(pcba_deliver, 0.6)
             self.device.click(coordinates)
             time.sleep(3)
         except TypeError:
