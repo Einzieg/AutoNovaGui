@@ -1,8 +1,0 @@
-pyinstaller~=6.11.1
-opencv-python~=4.10
-numpy~=1.24.2
-setuptools~=68.2.2
-ttkbootstrap~=1.10.1
-mtc-mumu==0.0.2
-msc-mumu==0.0.2
-msc-minicap==0.0.3

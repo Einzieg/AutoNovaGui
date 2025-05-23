@@ -3,7 +3,7 @@ import time
 
 import cv2
 from msc.minicap import MiniCap
-from msc.mumu import MuMuScreenCap, get_mumu_path
+from msc.mumu import MuMuCap, get_mumu_path
 from mtc.mumu import MuMuTouch
 
 from AdbClient import AdbClient
@@ -41,7 +41,7 @@ class DeviceUtils:
             # 尝试使用MuMu进行截图
             if get_mumu_path():
                 self.mumu_path = get_mumu_path()  # 获取MuMu路径
-                mumu_screencap = MuMuScreenCap(self.instance_index, emulator_install_path=self.mumu_path)
+                mumu_screencap = MuMuCap(self.instance_index, emulator_install_path=self.mumu_path)
                 logging.info("使用MuMu进行屏幕截图")
                 return mumu_screencap
             else:
@@ -124,7 +124,7 @@ class DeviceUtils:
         """
         start_time = time.time()
         try:
-            if isinstance(self.screencap_tool, MuMuScreenCap):
+            if isinstance(self.screencap_tool, MuMuCap):
                 self.screencap_tool.save_screencap(file_name)
                 logging.debug(f"使用MuMu屏幕截图，保存为 {file_name} ,耗时 {time.time() - start_time:.2f}s")
             elif isinstance(self.screencap_tool, MiniCap):

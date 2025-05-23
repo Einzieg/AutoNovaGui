@@ -1,0 +1,20 @@
+[project]
+name = "autonovagui"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.11"
+dependencies = [
+    "msc-mumu",
+    "mtc-mumu",
+    "msc-minicap",
+    "opencv_python==4.11.0.86",
+    "pywebview==5.4",
+    "ttkbootstrap==1.10.1",
+    "setuptools~=68.2.2",
+    "pyinstaller>=6.13.0",
+]
+
+[tool.uv.sources]
+msc-mumu = { git = "https://github.com/NakanoSanku/msc", subdirectory = "msc-mumu" }
+mtc-mumu = { git = "https://github.com/NakanoSanku/mtc", subdirectory = "mtc-mumu" }
+msc-minicap = { git = "https://github.com/NakanoSanku/msc", subdirectory = "msc-minicap" }

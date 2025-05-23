@@ -2,7 +2,7 @@
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=[r"C:\Users\Einzieg\PycharmProjects\AutoNovaGui\.venv"],
     binaries=[],
     datas=[('./static', './static'), ('screenshot.png', '.')],
     hiddenimports=['cv2', 'msc', 'mtc'],
