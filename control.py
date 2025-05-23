@@ -47,7 +47,8 @@ star_system_icon = cv_imread('static/novaimgs/button/to_galaxy.png')
 # 加载关闭图标
 close_icon = [cv_imread('static/novaimgs/button/button_close.png'),
               cv_imread('static/novaimgs/button/button_close2.png'),
-              cv_imread('static/novaimgs/button/button_close3.png')]
+              cv_imread('static/novaimgs/button/button_close3.png'),
+              cv_imread('static/novaimgs/order/close_order.png')]
 # 加载主页图标
 home_icon = cv_imread('static/novaimgs/button/to_home.png')
 # 加载返回图标
@@ -80,6 +81,8 @@ in_select_fleet = cv_imread('static/novaimgs/identify_in/in_fleet.png')
 in_galaxy = cv_imread('static/novaimgs/identify_in/in_xingyun.png')
 # 加载系统菜单
 button_system = cv_imread('static/novaimgs/button/button_system.png')
+# 加载更多菜单
+button_more_system = cv_imread('static/novaimgs/button/button_more_system.png')
 # 加载天赋图标
 button_talent = cv_imread('static/novaimgs/talent/to_talent.png')
 # 加载切换天赋图标
@@ -170,6 +173,7 @@ class Control:
                  game_mumu_path,  # Mumu路径
                  play_card_game,    # 翻牌游戏
                  ):
+        self.revenge = False
         self.device = DeviceUtils(instance_index=game_virtual_num, mumu_path=game_mumu_path)
         self.offset = game_offset
         self.confidence = game_confidence
@@ -312,8 +316,8 @@ class Control:
             logging.info("出现复仇>>>")
             coordinates = self.get_coordinate(revenge_attack, self.confidence)
             self.device.click(coordinates)
+            self.revenge = True
             time.sleep(3)
-            # self.attack_monsters()
 
     # 选择全部
     def select_all(self):
@@ -469,6 +473,14 @@ class Control:
             coordinates = self.get_coordinate(search_icon, self.confidence)
             self.device.click(coordinates)
             time.sleep(2)
+            # 检查是否弹出复仇提示
+            self.device.screencap()
+            if self.get_coordinate(revenge, self.confidence):
+                logging.info("出现复仇>>>")
+                coordinates = self.get_coordinate(revenge_attack, self.confidence)
+                self.device.click(coordinates)
+                self.revenge = True
+                time.sleep(3)
         except TypeError:
             logging.info("未匹配搜索图标<<<")
 
@@ -566,9 +578,19 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_system, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配系统图标<<<")
+
+    def open_more_system(self):
+        logging.info("正在匹配更多图标>>>")
+        try:
+            self.device.screencap()
+            coordinates = self.get_coordinate(button_more_system, self.confidence)
+            self.device.click(coordinates)
+            time.sleep(1)
+        except TypeError:
+            logging.info("未匹配更多图标<<<")
 
     def open_talent(self):
         logging.info("正在匹配天赋图标>>>")
@@ -576,7 +598,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_talent, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配天赋图标<<<")
 
@@ -586,7 +608,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_change_talent, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配修改天赋图标<<<")
 
@@ -596,7 +618,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_talent_increase_rc, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配获得RC增加图标<<<")
 
@@ -606,7 +628,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_talent_increase_orders, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配订单数量增加图标<<<")
 
@@ -616,7 +638,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_confirm_change_talent, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配确认修改天赋图标<<<")
 
@@ -624,6 +646,7 @@ class Control:
         logging.info("开始修改天赋流程>>>")
         self.home()
         self.open_system()
+        self.open_more_system()
         self.open_talent()
         self.change_talent()
         if talent:
@@ -639,7 +662,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_orders, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(2)
         except TypeError:
             logging.info("未匹配订单图标<<<")
 
@@ -649,7 +672,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(pcba_deliver, 0.6)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配一键交付图标<<<")
 
@@ -659,7 +682,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_confirm_deliver, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配确认交付图标<<<")
 
@@ -669,7 +692,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_depart, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(2)
         except TypeError:
             logging.info("未匹配离港图标<<<")
 
@@ -679,7 +702,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_close_orders, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(2.5)
         except TypeError:
             logging.info("未匹配关闭订单图标<<<")
 
@@ -689,7 +712,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_more_orders, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(2)
         except TypeError:
             logging.info("未匹配更多订单图标<<<")
 
@@ -699,7 +722,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_next_orders, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(2)
         except TypeError:
             logging.info("未匹配下一批图标<<<")
 
@@ -770,7 +793,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(home_icon, self.confidence)
             self.device.click(coordinates)
-            time.sleep(3)
+            time.sleep(1)
         except TypeError:
             logging.info("未匹配主页图标<<<")
 
@@ -867,6 +890,11 @@ class Control:
             if not self.in_battle_check():
                 logging.info("战斗结束")
                 fighting = False
+
+                if self.revenge:
+                    logging.info("等待复仇")
+                    self.revenge = False
+                    time.sleep(120)
                 callback()
 
     # 重置视角流程
@@ -886,7 +914,7 @@ class Control:
 
     # 主循环
     def main_loop(self):
-        time.sleep(3)
+        time.sleep(1)
         if self.if_reset:
             self.reset_process()
         if self.if_hidden:

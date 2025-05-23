@@ -4,6 +4,7 @@ import time
 import cv2
 from path_util import cv_imread
 
+
 class AutoFlipMemoryGameSolver:
 
     def __init__(self, device):
@@ -56,9 +57,9 @@ class AutoFlipMemoryGameSolver:
         opened_cards = []
         flipped_cards = set()
         total_cards = 4 * 5
-        opened = 0
 
         while len(flipped_cards) < total_cards:
+            opened = 0
             for i in range(4):
                 for j in range(5):
                     if (i, j) not in flipped_cards:
@@ -80,6 +81,7 @@ class AutoFlipMemoryGameSolver:
                         if card_name:
                             found_entry = None
                             opened += 1
+                            print(f"当前翻开{opened}张卡牌")
                             for entry in opened_cards:
                                 if entry[0] == card_name and (entry[1], entry[2]) != (i, j):
                                     found_entry = entry
@@ -104,6 +106,8 @@ class AutoFlipMemoryGameSolver:
                                 opened_cards.append((card_name, i, j))
                                 flipped_cards.add((i, j))
                                 time.sleep(1.2)
+                                if opened == 2:
+                                    opened = 0
                         else:
                             flipped_cards.add((i, j))
                             time.sleep(1)

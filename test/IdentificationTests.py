@@ -26,7 +26,8 @@ def cv_imread(file_path):
     return cv_img
 
 
-icon = cv2.imread("../static/novaimgs/attack/confirm_attack.png")
+icon = cv2.imread("../static/novaimgs/talent/to_talent.png")
+
 
 offset = 3
 
