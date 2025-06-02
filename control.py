@@ -692,7 +692,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_depart, self.confidence)
             self.device.click(coordinates)
-            time.sleep(2)
+            time.sleep(2.5)
         except TypeError:
             logging.info("未匹配离港图标<<<")
 

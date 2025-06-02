@@ -385,7 +385,10 @@ class GuiApp:
             self.stop_button.place_forget()
             self.start_button.place(x=50, y=150, width=200, height=100)
         except Exception as e:
+            import traceback
             logging.error(f"主函数异常: {e}")
+            logging.error("堆栈追踪信息:")
+            logging.error(traceback.format_exc())
             self.stop_button.place_forget()
             self.start_button.place(x=50, y=150, width=200, height=100)
 
