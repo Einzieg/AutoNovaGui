@@ -1,11 +1,21 @@
 ### 安装依赖
 ```shell
-pip install -r requirements.txt
+  pip install uv
+```
+```shell
+  uv sync
 ```
 
-### 打包
+### 直接运行
 ```shell
-pyinstaller main.spec
+  uv run main.py
+``` 
+
+### 打包
+
+- 修改 main.spec 文件内 pathex 为你项目路径下的.venv目录路径
+```shell
+  pyinstaller main.spec
 ```
 
 - [ ] 自定义次数

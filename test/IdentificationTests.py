@@ -1,38 +1,14 @@
-import os
-import random
-import sys
-
 import cv2
-import numpy as np
 from matplotlib import pyplot as plt
+from utils.DeviceUtils import DeviceUtils
 
-
-def resource_path(relative_path):
-    """获取资源文件的绝对路径"""
-    try:
-        base_path = sys._MEIPASS
-    except AttributeError:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-
-def cv_imread(file_path):
-    # cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8),-1)
-    # cv_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
-    cv_img = cv2.imread(file_path)
-    # plt.imshow(cv_img)
-    # plt.show()
-    return cv_img
-
-
-icon = cv2.imread("../static/novaimgs/talent/to_talent.png")
-
-
-offset = 3
+# device = DeviceUtils(instance_index=0)  # mumu
+device = DeviceUtils(port=16384)  # ADB
+template = cv2.imread("../static/novaimgs/button/button_system_blue.png")
 
 
 def get_coordinate(img, believe, no_click_zone=None):
+    device.screencap()
     screenshot = cv2.imread("../screenshot.png")
 
     # 遍历需要屏蔽的区域并填充为黑色
@@ -61,7 +37,7 @@ def get_coordinate(img, believe, no_click_zone=None):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         plt.imshow(screenshot)
-        plt.show()
+        # plt.show()
 
         # 计算模板图像的中心坐标
         icon_center_x = max_loc[0] + icon_w // 2
@@ -90,6 +66,5 @@ no_click_zones = [
     (1680, 250, 1920, 750)  # 右侧活动及快捷菜单
 ]
 
-x, y = get_coordinate(icon, 0.75)
-# pyautogui.click(x, y)
-print(x, y) # 匹配成功，坐标 [1372, 1110]
+x, y = get_coordinate(template, 0.75)
+print(x, y)  # 匹配成功，坐标 [1372, 1110]

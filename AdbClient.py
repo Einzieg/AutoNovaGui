@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 from threading import Lock
+from pathlib import Path
 
 
 class AdbClient:
@@ -27,7 +28,7 @@ class AdbClient:
             if getattr(sys, 'frozen', False):
                 base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
             else:
-                base_path = os.getcwd()
+                base_path = Path(__file__).parent
             self.adb_path = os.path.join(base_path, 'static/platform-tools', 'adb.exe')
             if not os.path.exists(self.adb_path):
                 raise FileNotFoundError(f"ADB路径 {self.adb_path} 不存在")
