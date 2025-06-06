@@ -384,8 +384,8 @@ class Control:
             self.find_repair()
             self.select_all()
             self.confirm()
-            if self.revenge == True:
-                self.fleets_return()
+            # if self.revenge:
+            #     self.fleets_return()
             self.combat_checks(self.attack_process)
             logging.info("刷精英流程结束<<<")
         except TypeError:
@@ -399,8 +399,8 @@ class Control:
             self.attack_monsters()
             self.select_all()
             self.confirm()
-            if self.revenge == True:
-                self.fleets_return()
+            # if self.revenge:
+            #     self.fleets_return()
             self.combat_checks(self.attack_normal_process)
             logging.info("刷怪流程结束<<<")
         except TypeError:
@@ -937,8 +937,9 @@ class Control:
 
                 if self.revenge:
                     logging.info("等待复仇")
+                    self.fleets_return()
                     self.revenge = False
-                    time.sleep(120)
+                    time.sleep(180)
                 callback()
 
     # 重置视角流程

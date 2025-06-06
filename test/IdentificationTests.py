@@ -2,14 +2,14 @@ import cv2
 from matplotlib import pyplot as plt
 from utils.DeviceUtils import DeviceUtils
 
-# device = DeviceUtils(instance_index=0)  # mumu
-device = DeviceUtils(port=16384)  # ADB
-template = cv2.imread("../static/novaimgs/button/button_system_blue.png")
+device = DeviceUtils(instance_index=0)  # mumu
+# device = DeviceUtils(port=16384)  # ADB
+template = cv2.imread("../static/novaimgs/button/recall_idle.png")
 
 
 def get_coordinate(img, believe, no_click_zone=None):
     device.screencap()
-    screenshot = cv2.imread("../screenshot.png")
+    screenshot = cv2.imread("screenshot.png")
 
     # 遍历需要屏蔽的区域并填充为黑色
     if no_click_zone is not None:
