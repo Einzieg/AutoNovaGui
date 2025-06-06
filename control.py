@@ -121,6 +121,14 @@ revenge = cv_imread('static/novaimgs/attack/revenge.png')
 # 复仇攻击
 revenge_attack = cv_imread('static/novaimgs/attack/revenge_attack.png')
 
+# 舰队返回需要图标
+# 菜单
+menu_icon = cv_imread('static/novaimgs/button/button_system_gold.png')
+# 舰队子菜单
+fleets_menu = cv_imread('static/novaimgs/button/fleets_menu.png')
+# 召回悬停
+recall_idle = cv_imread('static/novaimgs/button/recall_idle.png')
+
 # 禁止点击区
 no_click_zones = [
     (0, 0, 500, 260),  # 左上角人物
@@ -335,6 +343,38 @@ class Control:
         self.device.click(coordinates)
         time.sleep(1)
 
+    # 第一舰队返回
+    def fleets_return(self):
+        logging.info("舰队返回流程启动>>>")
+        self.find_menu_coordinates()
+        self.find_fleet_menu_coordinates()
+        self.recall_idle_fleets()
+        time.sleep(1)
+    
+    # 查找菜单
+    def find_menu_coordinates(self):
+        logging.info("寻找空间站菜单位置>>>")
+        self.device.screencap()
+        coordinates = self.get_coordinate(menu_icon, self.confidence)
+        self.device.click(coordinates)
+        time.sleep(1)
+    
+    # 查找舰队子菜单
+    def find_fleet_menu_coordinates(self):
+        logging.info("寻找舰队子菜单>>>")
+        self.device.screencap()
+        coordinates = self.get_coordinate(fleets_menu, self.confidence)
+        self.device.click(coordinates)
+        time.sleep(1)
+
+    # 召回舰队
+    def recall_idle_fleets(self):
+        logging.info("召回悬停舰队>>>")
+        self.device.screencap()
+        coordinates = self.get_coordinate(recall_idle, self.confidence)
+        self.device.click(coordinates)
+        time.sleep(1)
+
     # 刷精英怪流程
     def attack_process(self):
         logging.info("开始刷精英流程>>>")
@@ -344,6 +384,8 @@ class Control:
             self.find_repair()
             self.select_all()
             self.confirm()
+            if self.revenge == True:
+                self.fleets_return()
             self.combat_checks(self.attack_process)
             logging.info("刷精英流程结束<<<")
         except TypeError:
@@ -357,6 +399,8 @@ class Control:
             self.attack_monsters()
             self.select_all()
             self.confirm()
+            if self.revenge == True:
+                self.fleets_return()
             self.combat_checks(self.attack_normal_process)
             logging.info("刷怪流程结束<<<")
         except TypeError:
