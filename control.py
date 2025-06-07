@@ -123,7 +123,8 @@ revenge_attack = cv_imread('static/novaimgs/attack/revenge_attack.png')
 
 # 舰队返回需要图标
 # 菜单
-menu_icon = cv_imread('static/novaimgs/button/button_system_gold.png')
+menu_icons = [cv_imread('static/novaimgs/button/button_system_gold.png'),
+              cv_imread('static/novaimgs/button/button_system_blue.png')]
 # 舰队子菜单
 fleets_menu = cv_imread('static/novaimgs/button/fleets_menu.png')
 # 召回悬停
@@ -355,9 +356,11 @@ class Control:
     def find_menu_coordinates(self):
         logging.info("寻找空间站菜单位置>>>")
         self.device.screencap()
-        coordinates = self.get_coordinate(menu_icon, self.confidence)
-        self.device.click(coordinates)
-        time.sleep(1)
+        for template in menu_icons:
+            coordinates = self.get_coordinate(template, self.confidence)
+            if coordinates:
+                self.device.click(coordinates)
+                time.sleep(1)
     
     # 查找舰队子菜单
     def find_fleet_menu_coordinates(self):

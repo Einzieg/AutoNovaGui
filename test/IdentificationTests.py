@@ -4,7 +4,7 @@ from utils.DeviceUtils import DeviceUtils
 
 device = DeviceUtils(instance_index=0)  # mumu
 # device = DeviceUtils(port=16384)  # ADB
-template = cv2.imread("../static/novaimgs/button/recall_idle.png")
+template = cv2.imread("../static/novaimgs/button/button_system_gold.png")
 
 
 def get_coordinate(img, believe, no_click_zone=None):
