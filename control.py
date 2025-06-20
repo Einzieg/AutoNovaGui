@@ -729,7 +729,7 @@ class Control:
             self.device.screencap()
             coordinates = self.get_coordinate(button_confirm_deliver, self.confidence)
             self.device.click(coordinates)
-            time.sleep(1)
+            time.sleep(2)
         except TypeError:
             logging.info("未匹配确认交付图标<<<")
 
@@ -775,23 +775,23 @@ class Control:
 
     # order
     def orders_process(self):
-        self.relogin_check()
-        self.find_close()
-        self.home()
-        self.change_talent_process(True)
-        self.open_system()
-        self.open_orders()
+        # self.relogin_check()
+        # self.find_close()
+        # self.home()
+        # self.change_talent_process(True)
+        # self.open_system()
+        # self.open_orders()
         self.deliver_all()
         self.confirm_deliver()
-        self.change_talent_process(False)
-        self.open_system()
-        self.open_orders()
+        # self.change_talent_process(False)
+        # self.open_system()
+        # self.open_orders()
         self.depart()
         self.close_orders()
         self.more_order()
         self.next_order()
         self.confirm_deliver()
-        self.home()
+        # self.home()
 
     # --------------------------------------------------------------------------------
 

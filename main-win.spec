@@ -1,8 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=[os.path.join(os.getcwd(), '.venv')],
     binaries=[],
     datas=[('static', 'static'), ('screenshot.png', '.')],
     hiddenimports=['cv2', 'msc', 'mtc'],

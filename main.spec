@@ -1,8 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
 
 a = Analysis(
     ['main.py'],
-    pathex=[r"C:\Users\Einzieg\PycharmProjects\AutoNovaGui\.venv"],
+    pathex=[os.path.join(os.getcwd(), '.venv')],
     binaries=[],
     datas=[('./static', './static'), ('screenshot.png', '.')],
     hiddenimports=['cv2', 'msc', 'mtc'],
@@ -23,7 +24,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='NovaAH-3.5.5',
+    name='NovaAH-3.5.7',
     icon='static/ico/script.ico',
     debug=False,
     bootloader_ignore_signals=False,
