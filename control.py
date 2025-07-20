@@ -91,6 +91,8 @@ button_change_talent = cv_imread('static/novaimgs/talent/special_talent.png')
 button_talent_increase_rc = cv_imread('static/novaimgs/talent/increase_rc.png')
 # 加载天赋-订单数量增加
 button_talent_increase_orders = cv_imread('static/novaimgs/talent/increase_orders.png')
+# 加载天赋-刷新时长减少
+button_talent_reduce_time = cv_imread('static/novaimgs/talent/reduce_time.png')
 # 加载确认更改天赋图标
 button_confirm_change_talent = cv_imread('static/novaimgs/talent/confirm_replacement_talent.png')
 # 加载订单图标
@@ -670,14 +672,14 @@ class Control:
             logging.info("未匹配获得RC增加图标<<<")
 
     def change_talent_order(self):
-        logging.info("正在匹配订单数量增加图标>>>")
+        logging.info("正在匹配订单时长减少图标>>>")
         try:
             self.device.screencap()
-            coordinates = self.get_coordinate(button_talent_increase_orders, self.confidence)
+            coordinates = self.get_coordinate(button_talent_reduce_time, self.confidence)
             self.device.click(coordinates)
             time.sleep(1)
         except TypeError:
-            logging.info("未匹配订单数量增加图标<<<")
+            logging.info("未匹配订单时长减少图标<<<")
 
     def confirm_change_talent(self):
         logging.info("正在匹配确认修改天赋图标>>>")
@@ -775,17 +777,17 @@ class Control:
 
     # order
     def orders_process(self):
-        # self.relogin_check()
-        # self.find_close()
-        # self.home()
-        # self.change_talent_process(True)
-        # self.open_system()
-        # self.open_orders()
+        self.relogin_check()
+        self.find_close()
+        self.home()
+        self.change_talent_process(True)
+        self.open_system()
+        self.open_orders()
         self.deliver_all()
         self.confirm_deliver()
-        # self.change_talent_process(False)
-        # self.open_system()
-        # self.open_orders()
+        self.change_talent_process(False)
+        self.open_system()
+        self.open_orders()
         self.depart()
         self.close_orders()
         self.more_order()
